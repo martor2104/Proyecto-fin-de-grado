@@ -65,7 +65,7 @@ public class JwtService {
      * @param token
      * @return DAS
      */
-    public String getDasFromToken(String token) {
+    public String getUsernameFromToken(String token) {
         return getClaim(token, Claims::getSubject);
     }
 
@@ -77,7 +77,7 @@ public class JwtService {
      * @return true si el token es válido, false en caso contrario
      */
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String das = getDasFromToken(token);
+        final String das = getUsernameFromToken(token);
         return (das.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 

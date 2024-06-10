@@ -2,6 +2,9 @@ package com.api.webReservas.entity;
 
 import java.time.LocalDate;
 
+import com.api.webReservas.dto.PlateDTO;
+import com.api.webReservas.dto.ReservationDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,6 +34,23 @@ public class Reservation {
 	
 	@Column(name = "reservation_date", nullable = false)
 	private LocalDate reservationDate;
+	
+	public Reservation(ReservationDTO reservation) {
+		this.id = reservation.getId();
+		this.user = reservation.getUser();
+		this.reservationDate = reservation.getReservationDate();
+	}
+
+	public static ReservationDTO toDTO(Reservation reservation) {
+		if (reservation == null) {
+			return null;
+		}
+		return ReservationDTO.builder()
+				.id(reservation.getId())
+				.reservationDate(reservation.getReservationDate())
+				.user(reservation.getUser())
+				.build();
+	}
 
 	public Long getId() {
 		return id;

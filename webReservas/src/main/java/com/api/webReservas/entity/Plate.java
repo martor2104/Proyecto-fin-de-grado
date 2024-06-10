@@ -1,5 +1,8 @@
 package com.api.webReservas.entity;
 
+import com.api.webReservas.dto.PlateDTO;
+import com.api.webReservas.dto.UserDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,6 +38,19 @@ public class Plate {
 	
 	@Column(nullable = false)
 	private Double price;
+	
+	public static PlateDTO toDTO(Plate plate) {
+        if (plate == null) {
+            return null;
+        }
+        return new PlateDTO(
+			    plate.getId(),
+			    plate.getReservation().getUser().getUsername(),
+			    plate.getNamePlate(),
+			    plate.getDescription(),
+			    plate.getPrice()
+			);
+    }
 
 	public Long getId() {
 		return id;

@@ -13,6 +13,14 @@ public class PlateDTO {
 	private String description;
 	private Double price;
 	
+	public PlateDTO(Long id, String reservation, String namePlate, String description, Double price) {
+		this.id = id;
+		this.reservation = reservation;
+		this.namePlate = namePlate;
+		this.description = description;
+		this.price = price;
+	}
+	
 	public Long getId() {
 		return id;
 	}

@@ -3,6 +3,11 @@ package com.api.webReservas.entity;
 import java.util.Collection;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,99 +19,54 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Builder;
-import lombok.Data;
 
 import com.api.webReservas.auth.RegisterRequest;
 import com.api.webReservas.dto.UserDTO;
 
 @Entity(name = "users")
-@Builder
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User implements UserDetails {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
+
 	@Column(nullable = false)
 	private String name;
-	
+
 	@Column(nullable = false)
 	private String email;
-	
+
 	@Column(nullable = false)
 	private String password;
-	
-	@Column(nullable = false)
+
+	@Column
 	@Enumerated(EnumType.STRING)
-	private Role userRol;
-	
-    public User(Long id, String name, String email, String password, Role userRol) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.userRol = userRol;
-    }
-	
+	private Role role;
+
 	public static UserDTO toDTO(User user) {
 		return new UserDTO(
-			    user.getId(),
-			    user.getName(),
-			    user.getEmail(),
-			    user.getPassword(),
-			    user.getUserRol()
-			);
+				user.getId(),
+				user.getName(),
+				user.getEmail(),
+				user.getPassword(),
+				user.getRole()
+		);
 	}
-
 
 	public User(RegisterRequest user) {
-	    this.name = user.getName();
-	    this.email = user.getEmail();
-	    this.password = user.getPassword();
-	    this.userRol = user.getUserRol();
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public Role getUserRol() {
-		return userRol;
-	}
-
-	public void setUserRol(Role userRol) {
-		this.userRol = userRol;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
+		this.name = user.getName();
+		this.email = user.getEmail();
+		this.password = user.getPassword();
+		this.role = user.getUserRol() != null ? user.getUserRol() : Role.USER;
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of(new SimpleGrantedAuthority((userRol.name())));
+		return List.of(new SimpleGrantedAuthority((role.name())));
 	}
 
 	@Override
@@ -138,7 +98,4 @@ public class User implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
-
-
-
 }

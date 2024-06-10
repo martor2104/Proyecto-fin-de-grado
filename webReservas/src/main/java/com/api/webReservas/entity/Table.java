@@ -1,5 +1,8 @@
 package com.api.webReservas.entity;
 
+import com.api.webReservas.dto.PlateDTO;
+import com.api.webReservas.dto.TableDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,6 +35,22 @@ public class Table {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private TableStatus tableStatus;
+
+	public Table(TableDTO table) {
+		this.id = table.getId();
+		this.reservation = table.getReservation();
+	}
+
+	public static TableDTO toDTO(Table table) {
+        if (table == null) {
+            return null;
+        }
+        return new TableDTO(
+        		table.getId(),
+        		table.getReservation(),
+        		table.getTableStatus()
+			);
+    }
 
 	public Long getId() {
 		return id;

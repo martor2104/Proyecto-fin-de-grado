@@ -9,8 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.api.webReservas.auth.AuthResponse;
 import com.api.webReservas.auth.LoginRequest;
@@ -22,7 +25,7 @@ import com.api.webReservas.jwt.JwtService;
 import com.api.webReservas.repository.UserRepository;
 import com.api.webReservas.service.AuthService;
 
-
+@Service
 public class AuthServiceImpl implements AuthService {
 	
     @Autowired
@@ -34,42 +37,58 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private UserRepository userRepository;
 
-	@Override
-	public ResponseEntity<?> login(LoginRequest request) {
-		
-		try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getName(), request.getPassword()));
-            UserDetails user = userRepository.findByName(request.getName()).orElseThrow();
+    @Override
+    public ResponseEntity<?> login(LoginRequest request) {
+        try {
+            // Autenticar al usuario usando el AuthenticationManager
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getName(), request.getPassword())
+            );
 
+            // Buscar al usuario en el repositorio
+            UserDetails userDetails = userRepository.findByName(request.getName())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+            System.out.println(userDetails);
+
+            // Verificar que el UserDetails se pueda convertir a User
+            if (!(userDetails instanceof User)) {
+                throw new IllegalStateException("UserDetails cannot be cast to User");
+            }
+
+            User user = (User) userDetails;
+
+            // Crear los claims para el token JWT
             Map<String, Object> claims = new HashMap<>();
-            User userEntity = (User) user;
-            claims.put("role", userEntity.getUserRol().name());
-            claims.put("name", userEntity.getName());
+            claims.put("role", user.getRole().name());
+            claims.put("name", user.getName());
 
-            String token=jwtService.getToken(claims, user);
+            // Generar el token JWT
+            String token = jwtService.getToken(claims, userDetails);
 
+            // Devolver la respuesta con el token
             return ResponseEntity.status(HttpStatus.OK).body(new AuthResponse(token));
 
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Incorrect credentials"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("Incorrect credentials"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorDTO("An error occurred"));
         }
-	}
+    }
 
-	@Override
+
+    @Override
 	public ResponseEntity<?> register(User loggedUser, RegisterRequest user) {
 		try {
-			   if(loggedUser.getUserRol().equals(Role.ADMIN)) {
 				   User newUser = new User(user);
 				   newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 				   userRepository.save(newUser);
 			        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
-			   }else {
-				   return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You doesn't have permissions to save users"));
-			   }
 		}catch (Exception e) {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorDTO("Failed to register user"));
 		}
 
 	}
+    }
 
-}
+
