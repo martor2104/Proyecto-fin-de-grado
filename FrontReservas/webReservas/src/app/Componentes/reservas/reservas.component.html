@@ -1,0 +1,14 @@
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-md-3 sidebar">
+        <div class="list-group lista">
+          <a routerLink="/reservas/mapa" class="list-group-item" routerLinkActive="active">Mapa</a>
+          <a routerLink="/reservas/mesas-disponibles" class="list-group-item" routerLinkActive="active">Mesas Disponibles</a>
+          <a routerLink="/reservas/reservar-mesa" class="list-group-item" routerLinkActive="active">Reservar Mesa</a>
+        </div>
+      </div>
+      <div class="col-md-9 main-content">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>

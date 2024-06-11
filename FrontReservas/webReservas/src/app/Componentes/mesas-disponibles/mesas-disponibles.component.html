@@ -1,0 +1,18 @@
+<app-reservas></app-reservas>
+<div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h2>Número de las Mesas Disponibles:</h2>
+        <ul>
+          <li *ngFor="let mesa of mesasDisponibles">{{ mesa.id }}</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h2>Número de las Mesas Reservadas:</h2>
+        <ul>
+          <li *ngFor="let mesa of mesasReservadas">{{ mesa.id }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  

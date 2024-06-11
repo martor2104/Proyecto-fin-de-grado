@@ -1,0 +1,15 @@
+p{
+    margin-left: 50%;
+}
+
+.map-container {
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    margin-top: 5%;
+  }
+  
+  .map-image {
+    max-width: 100%; /* Ajusta la imagen al tamaño máximo del contenedor */
+    max-height: 100%; /* Ajusta la imagen al tamaño máximo del contenedor */
+  }
+  

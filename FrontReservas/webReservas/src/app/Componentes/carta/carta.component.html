@@ -1,0 +1,14 @@
+<div class="container">
+    <div class="row">
+      <div class="col-md-3 mb-4" *ngFor="let plato of platos">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">{{ plato.namePlate }}</h5>
+            <p class="card-text">{{ plato.description }}</p>
+            <p class="card-text">Precio: ${{ plato.price }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
