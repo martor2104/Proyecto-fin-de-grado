@@ -9,6 +9,7 @@ import { MesasDisponiblesComponent } from './Componentes/mesas-disponibles/mesas
 import { ReservarMesaComponent } from './Componentes/reservar-mesa/reservar-mesa.component';
 import { PlateFormComponent } from './Componentes/plate-form/plate-form.component';
 import { UsuariosComponent } from './Componentes/usuarios/usuarios.component';
+import { ReservaListadoComponent } from './Componentes/reserva-listado/reserva-listado.component';
 
 const routes: Routes = [
   { path: 'registro', component: RegistroComponent },
@@ -19,6 +20,7 @@ const routes: Routes = [
   {path: 'reservas/mapa', component: MapaComponent},
   {path: 'reservas/mesas-disponibles', component: MesasDisponiblesComponent},
   {path: 'reservas/reservar-mesa', component: ReservarMesaComponent},
+  {path: 'reservas/listado', component: ReservaListadoComponent},
   {path: 'usuarios', component: UsuariosComponent},
   {path: 'plate/form', component: PlateFormComponent}
 ];

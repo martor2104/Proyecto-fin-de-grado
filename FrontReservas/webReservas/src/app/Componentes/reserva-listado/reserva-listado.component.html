@@ -1,0 +1,23 @@
+<app-reservas></app-reservas>
+<div class="container mt-5">
+    <h2>Listado de Reservas</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre del Usuario</th>
+          <th>Fecha</th>
+          <th>Número de Mesa</th>
+          <th>Estado de la Mesa</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let reserva of reservas">
+          <td>{{ reserva.usuarioNombre }}</td>
+          <td>{{ reserva.fecha | date: 'short' }}</td>
+          <td>{{ reserva.numeroMesa }}</td>
+          <td>{{ reserva.tableStatus }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
