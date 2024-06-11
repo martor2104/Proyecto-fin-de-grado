@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { PlatosService } from '../../Servicios/platos/platos.service';
 
 @Component({
@@ -9,16 +10,29 @@ import { PlatosService } from '../../Servicios/platos/platos.service';
 export class CartaComponent implements OnInit {
   platos: any[] = [];
 
-  constructor(private platosService: PlatosService) { }
+  constructor(private router: Router, private platoService: PlatosService) {}
 
   ngOnInit(): void {
-    this.platosService.getPlatos().subscribe(
-      data => {
-        this.platos = data;
-      },
-      error => {
-        console.error('Error al obtener platos:', error);
-      }
-    );
+    this.loadPlatos();
+  }
+
+  loadPlatos(): void {
+    this.platoService.getPlatos().subscribe(platos => {
+      this.platos = platos;
+    });
+  }
+
+  openAddPlatoForm(): void {
+    this.router.navigate(['/plate/form']);
+  }
+
+  openEditPlatoForm(plato: any): void {
+    this.router.navigate(['/plate/form', plato.id]);
+  }
+
+  borrarPlato(plato: any): void {
+    this.platoService.deletePlato(plato.id).subscribe(response => {
+      this.loadPlatos();
+    });
   }
 }

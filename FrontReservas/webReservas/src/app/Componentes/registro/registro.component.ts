@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RegistroService } from '../../Servicios/registro/registro.service';
+import { AuthService } from '../../Servicios/AuthService/auth-service.service';
 
 @Component({
   selector: 'app-registro',
@@ -14,12 +14,12 @@ export class RegistroComponent {
     role: 'USER'
   };
 
-  constructor(private registroService: RegistroService) { }
+  constructor(private authService: AuthService) { }
 
   onSubmit() {
     console.log('Datos de registro enviados:', this.registro);
 
-    this.registroService.registrarUsuario(this.registro).subscribe(
+    this.authService.registrarUsuario(this.registro).subscribe(
       response => {
         console.log('Registro exitoso', response);
       },
