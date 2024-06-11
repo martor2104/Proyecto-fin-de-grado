@@ -1,18 +1,33 @@
-/* Estilos CSS para la barra lateral */
-.sidebar {
-    display: flex; /* Utiliza flexbox */
-    flex-direction: column; /* Dirección de los elementos flexibles */
-    align-items: center; /* Centra horizontalmente el contenido */
-    position: fixed; /* Fija la posición */
-    top: 79px; /* Altura del header */
-    left: 0; /* Se pega a la izquierda */
-    bottom: 0; /* Llega al final de la ventana */
-    width: 200px; /* Ancho de la barra lateral */
-    background-color: #f8f9fa; /* Color de fondo */
-    overflow-y: auto; /* Agrega scroll si hay mucho contenido */
-
-    .lista{
+:host {
+    display: flex;
+    flex-grow: 1;
+    z-index: -2;
+    .container-fluid {
+      height: 100%;
+      .row {
+        height: 100%;
+      }
+    }
+    .sidebar {
+      display: flex; /* Utiliza flexbox */
+      flex-direction: column; /* Dirección de los elementos flexibles */
+      align-items: center; /* Centra horizontalmente el contenido */
+      position: fixed; /* Fija la posición */
+      top: 0px; /* Altura del header */
+      left: 0; /* Se pega a la izquierda */
+      bottom: 0; /* Llega al final de la ventana */
+      width: 200px; /* Ancho de la barra lateral */
+      background-color: #f8f9fa; /* Color de fondo */
+      overflow-y: auto; /* Agrega scroll si hay mucho contenido */
+  
+      .lista {
         margin-top: 100%;
+      }
+    }
+  
+    .main-content {
+      margin-left: 200px; /* Deja espacio para la barra lateral */
+      flex-grow: 1;
     }
   }
   

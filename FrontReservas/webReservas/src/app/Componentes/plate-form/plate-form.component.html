@@ -1,1 +1,23 @@
-<p>plate-form works!</p>
+<div class="container d-flex justify-content-center mt-5">
+    <div class="card" style="width: 50%;">
+      <div class="card-body">
+        <h5 class="card-title">{{ isEditMode ? 'Actualizar Plato' : 'Añadir Nuevo Plato' }}</h5>
+        <form [formGroup]="platoForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="namePlate">Nombre del Plato</label>
+            <input type="text" class="form-control" id="namePlate" formControlName="namePlate">
+          </div>
+          <div class="form-group">
+            <label for="description">Descripción</label>
+            <textarea class="form-control" id="description" formControlName="description"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="price">Precio</label>
+            <input type="number" class="form-control" id="price" formControlName="price">
+          </div>
+          <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Guardar Cambios' : 'Añadir Plato' }}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  

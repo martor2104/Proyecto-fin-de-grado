@@ -1,2 +1,20 @@
 <app-reservas></app-reservas>
-<p>reservar-mesa works!</p>
+
+<div class="container mt-5">
+    <h2>Reservar una Mesa</h2>
+    <form (ngSubmit)="onSubmit()" #reservationForm="ngForm">
+      <div class="form-group">
+        <label for="tableNumber">Número de Mesa</label>
+        <select id="tableNumber" class="form-control" required [(ngModel)]="tableNumber" name="tableNumber">
+          <option *ngFor="let number of tableNumbers" [value]="number">{{ number }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="reservationDate">Fecha de Reserva</label>
+        <input type="date" id="reservationDate" class="form-control" required [(ngModel)]="reservationDate" name="reservationDate">
+      </div>
+      <button type="submit" class="btn btn-primary">Reservar</button>
+    </form>
+  </div>
+  
+  

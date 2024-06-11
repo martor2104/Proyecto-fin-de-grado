@@ -10,11 +10,13 @@ import { HeaderComponent } from './Componentes/header/header.component';
 import { FooterComponent } from './Componentes/footer/footer.component';
 import { RegistroComponent } from './Componentes/registro/registro.component';
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MesasDisponiblesComponent } from './Componentes/mesas-disponibles/mesas-disponibles.component';
 import { MapaComponent } from './Componentes/mapa/mapa.component';
 import { ReservarMesaComponent } from './Componentes/reservar-mesa/reservar-mesa.component';
 import { PlateFormComponent } from './Componentes/plate-form/plate-form.component';
+import { AuthService } from './Servicios/AuthService/auth-service.service';
+import { UsuariosComponent } from './Componentes/usuarios/usuarios.component';
 
 @NgModule({
   declarations: [
@@ -29,16 +31,19 @@ import { PlateFormComponent } from './Componentes/plate-form/plate-form.componen
     MapaComponent,
     ReservarMesaComponent,
     PlateFormComponent,
+    UsuariosComponent,
     
   ],
   imports: [
     FormsModule,
     BrowserModule,
     HttpClientModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ReactiveFormsModule
   ],
   providers: [
-    provideClientHydration()
+    provideClientHydration(),
+    AuthService
   ],
   bootstrap: [AppComponent]
 })
