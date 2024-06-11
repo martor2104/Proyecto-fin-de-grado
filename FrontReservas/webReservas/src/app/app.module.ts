@@ -17,6 +17,7 @@ import { ReservarMesaComponent } from './Componentes/reservar-mesa/reservar-mesa
 import { PlateFormComponent } from './Componentes/plate-form/plate-form.component';
 import { AuthService } from './Servicios/AuthService/auth-service.service';
 import { UsuariosComponent } from './Componentes/usuarios/usuarios.component';
+import { ReservaListadoComponent } from './Componentes/reserva-listado/reserva-listado.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { UsuariosComponent } from './Componentes/usuarios/usuarios.component';
     ReservarMesaComponent,
     PlateFormComponent,
     UsuariosComponent,
+    ReservaListadoComponent,
     
   ],
   imports: [
