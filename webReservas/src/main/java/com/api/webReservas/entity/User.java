@@ -61,7 +61,7 @@ public class User implements UserDetails {
 		this.name = user.getName();
 		this.email = user.getEmail();
 		this.password = user.getPassword();
-		this.role = user.getUserRol() != null ? user.getUserRol() : Role.USER;
+		this.role = user.getRole() != null && user.getRole().equalsIgnoreCase("Admin") ? Role.ADMIN : Role.USER;
 	}
 
 	@Override

@@ -18,26 +18,32 @@ public class TableController {
     private TableService tableService;
 
     @GetMapping
-    @Operation(summary = "Obtener todos los usuarios", description = "Devuelve todos los usuarios")
-    public ResponseEntity<?> getAllUsers() {
+    @Operation(summary = "Obtener todas las mesas", description = "Devuelve todos las mesas")
+    public ResponseEntity<?> getAllTables() {
         return tableService.getAll();
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener un usuario", description = "Obtiene un usuario por id")
-    public ResponseEntity<?> getUserById(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+    @Operation(summary = "Obtener una mesa", description = "Obtiene una mesa por id")
+    public ResponseEntity<?> getTableById(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         return tableService.getById(id);
     }
 
-    @PutMapping("/delete/{id}")
-    @Operation(summary = "Borra un usuario", description = "Deshabilita un usuario de la base de datos por su id")
-    public ResponseEntity<?> deleteUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+    @DeleteMapping("/delete/{id}")
+    @Operation(summary = "Borra una mesa", description = "Deshabilita una mesa de la base de datos por su id")
+    public ResponseEntity<?> deleteTable(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         return tableService.deleteTable((User) userDetails, id);
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Actualiza un usuario", description = "Actualiza un usuario por su id")
-    public ResponseEntity<?> putUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id, @RequestBody TableDTO table) {
+    @Operation(summary = "Actualiza una mesa", description = "Actualiza una mesa por su id")
+    public ResponseEntity<?> putTable(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id, @RequestBody TableDTO table) {
         return tableService.putTable((User) userDetails, id, table);
+    }
+
+    @PostMapping
+    @Operation(summary = "Guarda una mesa", description = "Guarda una mesa en la base de datos")
+    public ResponseEntity<?> postTable(@AuthenticationPrincipal UserDetails userDetails, @RequestBody TableDTO table){
+        return  tableService.saveTable((User) userDetails, table);
     }
 }

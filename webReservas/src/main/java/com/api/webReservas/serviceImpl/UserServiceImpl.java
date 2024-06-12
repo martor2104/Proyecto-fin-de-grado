@@ -1,7 +1,10 @@
 package com.api.webReservas.serviceImpl;
 
+import com.api.webReservas.jwt.JwtUserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.api.webReservas.dto.ErrorDTO;
@@ -11,6 +14,8 @@ import com.api.webReservas.entity.Role;
 import com.api.webReservas.entity.User;
 import com.api.webReservas.repository.UserRepository;
 import com.api.webReservas.service.UserService;
+
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -80,6 +85,30 @@ public class UserServiceImpl implements UserService{
 		} else {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You doesn't have permissions to modify user"));
 		}
+	}
+
+	@Override
+	public User findByUsername(String username) {
+		// Buscar el usuario en la base de datos por su nombre de usuario
+		Optional<User> userOptional = repository.findByName(username);
+
+		// Verificar si el usuario existe en la base de datos
+		if (userOptional.isPresent()) {
+			User user = userOptional.get(); // Obtener el objeto User del Optional
+			return user;
+		} else {
+			return null; // Devolver null si no se encuentra el usuario
+		}
+	}
+
+	@Override
+	public Long getUserId() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && authentication.getPrincipal() instanceof JwtUserDetails) {
+			JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
+			return userDetails.getId();
+		}
+		return null;
 	}
 
 }
