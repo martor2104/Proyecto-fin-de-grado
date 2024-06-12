@@ -30,9 +30,9 @@ public class ReservationController {
         return reservationService.getById(id);
     }
 
-    @PutMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     @Operation(summary = "Borra una reserva", description = "Deshabilita una reserva de la base de datos por su id")
-    public ResponseEntity<?> deleteReservcation(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+    public ResponseEntity<?> deleteReserv(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         return reservationService.deleteReservation((User) userDetails, id);
     }
 

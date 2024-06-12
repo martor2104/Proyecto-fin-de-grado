@@ -29,7 +29,7 @@ public class PlateController {
         return plateService.getById(id);
     }
 
-    @PutMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     @Operation(summary = "Borra un plato", description = "Deshabilita un plato de la base de datos por su id")
     public ResponseEntity<?> deletePlate(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         return plateService.deletePlate((User) userDetails, id);
