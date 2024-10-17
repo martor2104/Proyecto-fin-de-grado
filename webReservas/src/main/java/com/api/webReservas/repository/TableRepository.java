@@ -6,4 +6,6 @@ import com.api.webReservas.entity.Table;
 
 public interface TableRepository extends JpaRepository<Table, Long>{
 
+    void deleteByReservationId(Long reservationId);
+
 }

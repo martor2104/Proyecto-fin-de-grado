@@ -1,9 +1,14 @@
 package com.api.webReservas.serviceImpl;
 
 import com.api.webReservas.entity.Table;
+import com.api.webReservas.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.api.webReservas.dto.ErrorDTO;
@@ -20,6 +25,9 @@ public class PlateServiceImpl implements PlateService{
 	
 	@Autowired
 	private PlateRepository repository;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	@Override
 	public ResponseEntity<?> getAll() {
@@ -42,29 +50,50 @@ public class PlateServiceImpl implements PlateService{
 	public ResponseEntity<?> savePlate(User loggedUser, PlateDTO plate) {
 		if (loggedUser.getRole().equals(Role.ADMIN)) {
 			Plate newPlate = new Plate(plate);
-			return ResponseEntity.status(HttpStatus.OK).body(Plate.toDTO(repository.save(newPlate)));
+			Plate savedPlate = repository.save(newPlate);
+			return ResponseEntity.status(HttpStatus.CREATED).body(Plate.toDTO(savedPlate));
 		} else {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You doesn't have permissions to save tables"));
 		}
     }
-	
+
 
 	@Override
-	public ResponseEntity<?> deletePlate(User loggedUser, Long id) {
-		if (loggedUser.getRole().equals(Role.ADMIN)) {
-			Plate plate = repository.findById(id).orElse(null);
-
-			if(plate != null) {
-				repository.delete(plate);
-				return ResponseEntity.status(HttpStatus.OK).body(new MessageDTO("Plate deleted"));
-			} else {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("Plate doesn't exist"));
-			}
-
-		} else {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You doesn't have permissions to delete plates"));
+	public ResponseEntity<?> deletePlate(Long id, UserDetails userDetails) {
+		if (userDetails == null) {
+			System.out.println("Usuario no autenticado");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");
 		}
+
+		userDetails.getAuthorities().forEach(authority -> {
+			System.out.println("GrantedAuthority: " + authority.getAuthority());
+		});
+
+		boolean isAdmin = userDetails.getAuthorities().stream()
+				.anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADMIN"));
+
+		System.out.println("Usuario autenticado: " + userDetails.getUsername());
+		System.out.println("Roles del usuario: " + userDetails.getAuthorities());
+		System.out.println("¿El usuario tiene rol de ADMIN?: " + isAdmin);
+
+		if (!isAdmin) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permisos para eliminar este plato");
+		}
+
+		Plate plate = repository.findById(id).orElse(null);
+		if (plate == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Plato no encontrado");
+		}
+
+		repository.delete(plate);
+		return ResponseEntity.status(HttpStatus.OK).body("Plato eliminado");
 	}
+
+
+
+
+
+
 
 	@Override
 	public ResponseEntity<?> putPlate(User loggedUser, Long id, PlateDTO plate) {

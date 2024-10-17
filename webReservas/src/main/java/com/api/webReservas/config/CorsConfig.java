@@ -30,10 +30,11 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/api/auth/**")
-                        .allowedOrigins("http://localhost:4200")
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:4200/**")  // Ajusta la URL según tu configuración
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
+                        .allowedHeaders("Authorization", "Content-Type")
+                        .exposedHeaders("Authorization")
                         .allowCredentials(true);
             }
         };
