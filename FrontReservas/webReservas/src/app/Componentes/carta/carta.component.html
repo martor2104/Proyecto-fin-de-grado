@@ -1,5 +1,5 @@
 <div class="container mt-5">
-  <button class="btn btn-success mb-3" (click)="openAddPlatoForm()">Añadir Nuevo Plato</button>
+  <button class="btn btn-success mb-3" (click)="openAddPlatoForm()" *ngIf="isAdmin">Añadir Nuevo Plato</button>
   <div class="row">
     <!-- Tarjetas de platos existentes -->
     <div class="col-md-3 mb-4" *ngFor="let plato of platos">
@@ -8,8 +8,8 @@
           <h5 class="card-title">{{ plato.namePlate }}</h5>
           <p class="card-text">{{ plato.description }}</p>
           <p class="card-text">Precio: ${{ plato.price }}</p>
-          <button class="btn btn-primary mr-2" (click)="openEditPlatoForm(plato)">Editar</button>
-          <button class="btn btn-danger" (click)="borrarPlato(plato)">Borrar</button>
+          <button class="btn btn-primary mr-2" (click)="openEditPlatoForm(plato)" *ngIf="isAdmin">Editar</button>
+          <button class="btn btn-danger" (click)="borrarPlato(plato)" *ngIf="isAdmin">Borrar</button>
         </div>
       </div>
     </div>

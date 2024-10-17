@@ -1,0 +1,35 @@
+<div class="container mt-5">
+  <h2>{{ isEditMode ? 'Editar Usuario' : 'Añadir Usuario' }}</h2> <!-- Cambia el título dinámicamente -->
+  
+  <form (ngSubmit)="onSubmit()" #usuarioForm="ngForm">
+  
+    <div class="mb-3">
+      <label for="name" class="form-label">Nombre</label>
+      <input type="text" id="name" class="form-control" [(ngModel)]="usuario.name" name="name" required>
+    </div>
+  
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" id="email" class="form-control" [(ngModel)]="usuario.email" name="email" required>
+    </div>
+  
+    <div class="mb-3">
+      <label for="password" class="form-label">Contraseña</label>
+      <input type="password" id="password" class="form-control" [(ngModel)]="usuario.password" name="password" required>
+    </div>
+  
+    <div class="mb-3">
+      <label for="role" class="form-label">Rol</label>
+      <select id="role" class="form-select" [(ngModel)]="usuario.userRol" name="userRol" required>
+        <option [ngValue]="null">Seleccione un rol</option>
+        <option [ngValue]="'ADMIN'">Admin</option>
+        <option [ngValue]="'USER'">User</option>
+      </select>
+    </div>
+  
+    <!-- Cambia el texto del botón dinámicamente -->
+    <button type="submit" class="btn btn-primary" [disabled]="!usuarioForm.form.valid">
+      {{ isEditMode ? 'Actualizar Usuario' : 'Añadir Usuario' }}
+    </button>
+  </form>
+</div>

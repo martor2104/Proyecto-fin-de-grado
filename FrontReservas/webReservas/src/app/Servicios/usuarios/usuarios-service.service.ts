@@ -34,4 +34,8 @@ export class UsuariosServiceService {
     const url = `${this.apiUrl}/${id}`;
     return this.http.delete<void>(url);
   }
+
+  addUsuario(usuario: UserDTO): Observable<UserDTO>{
+    return this.http.post<UserDTO>(`${this.apiUrl}`, usuario);
+  }
 }

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -31,9 +31,20 @@ export class PlatosService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
-  // Método para borrar un plato
+
   deletePlato(id: number): Observable<any> {
     const url = `${this.apiUrl}/${id}`;
-    return this.http.delete<any>(url);
+    const token = localStorage.getItem('token');  // Asegúrate de que el token esté en localStorage
+  
+    console.log('Token JWT:', token);
+  
+    // Configura los encabezados para incluir el token JWT
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  
+    return this.http.delete<any>(url, { headers });  // Añade los encabezados a la solicitud
   }
+  
+
 }

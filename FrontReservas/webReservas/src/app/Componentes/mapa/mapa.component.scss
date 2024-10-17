@@ -1,15 +1,21 @@
-p{
-    margin-left: 50%;
+.container {
+  display: grid;
+  grid-template-columns: repeat(5, 50px); /* Crea 5 columnas de 50px */
+  grid-gap: 10px; /* Espacio entre los cuadrados */
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 }
 
-.map-container {
-    display: flex;
-    justify-content: center; /* Centra horizontalmente */
-    margin-top: 5%;
-  }
-  
-  .map-image {
-    max-width: 100%; /* Ajusta la imagen al tamaño máximo del contenedor */
-    max-height: 100%; /* Ajusta la imagen al tamaño máximo del contenedor */
-  }
-  
+.square {
+  width: 50px;
+  height: 50px;
+  background-color: lightblue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+  border: 2px solid darkblue;
+  border-radius: 5px;
+}
