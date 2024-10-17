@@ -12,6 +12,10 @@ import com.api.webReservas.entity.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 	
     @Query("SELECT u FROM users u WHERE u.name = :name")
-    Optional<User> findByName(String name);
+    Optional<User> findByOptionalName(String name);
+
+    User findByName(String name);
+
+    boolean existsByEmail(String email);
 
 }

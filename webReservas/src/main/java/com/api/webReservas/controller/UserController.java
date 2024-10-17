@@ -33,7 +33,7 @@ public class UserController {
 		return userService.getById((User) userDetails, id);
 	}
 
-	@DeleteMapping("/delete/{id}")
+	@DeleteMapping("/{id}")
 	@Operation(summary = "Borra un usuario", description = "Deshabilita un usuario de la base de datos por su id")
 	public ResponseEntity<?> deleteUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
 		return userService.deleteUser((User) userDetails, id);
@@ -43,6 +43,11 @@ public class UserController {
 	@Operation(summary = "Actualiza un usuario", description = "Actualiza un usuario por su id")
 	public ResponseEntity<?> putUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id, @RequestBody UserDTO user) {
 		return userService.putUser((User) userDetails, id, user);
+	}
+
+	@PostMapping()
+	public  ResponseEntity<?> addUser(@AuthenticationPrincipal UserDetails loggedUser, @RequestBody UserDTO userDTO){
+		return  userService.addUser((User) loggedUser, userDTO);
 	}
 
 

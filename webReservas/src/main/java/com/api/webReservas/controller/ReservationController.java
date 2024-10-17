@@ -5,6 +5,7 @@ import com.api.webReservas.dto.ReservationDTO;
 import com.api.webReservas.entity.User;
 import com.api.webReservas.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,12 +33,14 @@ public class ReservationController {
 
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Borra una reserva", description = "Deshabilita una reserva de la base de datos por su id")
+    @SecurityRequirement(name = "adminAuth")
     public ResponseEntity<?> deleteReserv(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         return reservationService.deleteReservation((User) userDetails, id);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualiza un plato", description = "Actualiza un plato por su id")
+    @SecurityRequirement(name = "adminAuth")
     public ResponseEntity<?> putReservation(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id, @RequestBody ReservationDTO reservation) {
         return reservationService.putReservation((User) userDetails, id, reservation);
     }

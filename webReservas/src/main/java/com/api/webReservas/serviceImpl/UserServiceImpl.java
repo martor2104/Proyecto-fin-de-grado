@@ -1,10 +1,16 @@
 package com.api.webReservas.serviceImpl;
 
+import com.api.webReservas.entity.Reservation;
 import com.api.webReservas.jwt.JwtUserDetails;
+import com.api.webReservas.repository.ReservationRepository;
+import com.api.webReservas.repository.TableRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.api.webReservas.dto.ErrorDTO;
@@ -15,17 +21,28 @@ import com.api.webReservas.entity.User;
 import com.api.webReservas.repository.UserRepository;
 import com.api.webReservas.service.UserService;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService{
-	
-	private UserRepository repository;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
+	private ReservationRepository reservationRepository;
+
+	@Autowired
+	private TableRepository tableRepository;
 
 	@Override
 	public ResponseEntity<?> getAll(User loggedUser) {
 		if(loggedUser.getRole().equals(Role.ADMIN)) {
-			return ResponseEntity.status(HttpStatus.OK).body(repository.findAll().stream().map(User::toDTO));
+			return ResponseEntity.status(HttpStatus.OK).body(userRepository.findAll().stream().map(User::toDTO));
 		}else {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You doesn't have permissions to list users"));
 		}	
@@ -35,7 +52,7 @@ public class UserServiceImpl implements UserService{
 	public ResponseEntity<?> getById(User loggedUser, Long id) {
 		if (loggedUser.getRole().equals(Role.ADMIN)) {
 
-			User user = repository.findById(id).orElse(null);
+			User user = userRepository.findById(id).orElse(null);
 
 
 			if (user != null) {
@@ -49,27 +66,38 @@ public class UserServiceImpl implements UserService{
 		}
 	}
 
+	@Transactional
 	@Override
 	public ResponseEntity<?> deleteUser(User loggedUser, Long id) {
 		if (loggedUser.getRole().equals(Role.ADMIN)) {
-			User user = repository.findById(id).orElse(null);
+			User user = userRepository.findById(id).orElse(null);
 
-			if(user != null) {
-				repository.delete(user);
-				return ResponseEntity.status(HttpStatus.OK).body(new MessageDTO("User deleted"));
+			if (user != null) {
+				List<Reservation> reservations = reservationRepository.findByUserId(user.getId());
+				if (reservations != null && !reservations.isEmpty()) {
+					for (Reservation reservation : reservations) {
+						tableRepository.deleteByReservationId(reservation.getId());
+
+						reservationRepository.delete(reservation);
+					}
+				}
+
+				userRepository.delete(user);
+				return ResponseEntity.status(HttpStatus.OK).body(new MessageDTO("User and associated reservations deleted"));
 			} else {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("User doesn't exist"));
 			}
 
 		} else {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You doesn't have permissions to delete users"));
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You don't have permissions to delete users"));
 		}
 	}
+
 
 	@Override
 	public ResponseEntity<?> putUser(User loggedUser, Long id, UserDTO user) {
 		if (loggedUser.getRole().equals(Role.ADMIN)) {
-			User oldUser = repository.findById(id).orElse(null);
+			User oldUser = userRepository.findById(id).orElse(null);
 
 			if (oldUser != null) {
 
@@ -77,7 +105,7 @@ public class UserServiceImpl implements UserService{
 				oldUser.setRole((user.getUserRol() != null) ? user.getUserRol() : oldUser.getRole());
 				oldUser.setEmail((user.getEmail() != null) ? user.getEmail() : oldUser.getEmail());
 
-				return ResponseEntity.status(HttpStatus.OK).body(User.toDTO(repository.save(oldUser)));
+				return ResponseEntity.status(HttpStatus.OK).body(User.toDTO(userRepository.save(oldUser)));
 			} else {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("User doesn't exist"));
 			}
@@ -88,16 +116,39 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public User findByUsername(String username) {
-		// Buscar el usuario en la base de datos por su nombre de usuario
-		Optional<User> userOptional = repository.findByName(username);
+	public ResponseEntity<?> addUser(User loggedUser, UserDTO userDTO) {
+		if (!loggedUser.getRole().equals(Role.ADMIN)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+					.body("No tienes permisos para añadir un usuario.");
+		}
 
-		// Verificar si el usuario existe en la base de datos
+		if (userRepository.existsByEmail(userDTO.getEmail())) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body("Ya existe un usuario con este email.");
+		}
+
+		User newUser = new User();
+		newUser.setName(userDTO.getName());
+		newUser.setEmail(userDTO.getEmail());
+		newUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+		newUser.setRole(userDTO.getUserRol().equals(Role.ADMIN) ? Role.ADMIN : Role.USER);
+
+
+		userRepository.save(newUser);
+
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body("Usuario añadido correctamente.");
+	}
+
+	@Override
+	public User findByUsername(String username) {
+		Optional<User> userOptional = userRepository.findByOptionalName(username);
+
 		if (userOptional.isPresent()) {
-			User user = userOptional.get(); // Obtener el objeto User del Optional
+			User user = userOptional.get();
 			return user;
 		} else {
-			return null; // Devolver null si no se encuentra el usuario
+			return null;
 		}
 	}
 

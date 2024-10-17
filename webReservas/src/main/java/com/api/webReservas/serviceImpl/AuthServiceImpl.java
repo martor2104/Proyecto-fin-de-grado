@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
             );
 
             // Buscar al usuario en el repositorio
-            UserDetails userDetails = this.userRepository.findByName(request.getName())
+            UserDetails userDetails = this.userRepository.findByOptionalName(request.getName())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
             // Verificar que el UserDetails se pueda convertir a User
@@ -67,6 +67,7 @@ public class AuthServiceImpl implements AuthService {
             Map<String, Object> claims = new HashMap<>();
             claims.put("role", user.getRole().name());
             claims.put("name", user.getName());
+
 
             // Generar el token JWT
             String token = jwtService.getToken(claims, userDetails);

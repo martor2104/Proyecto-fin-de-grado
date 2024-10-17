@@ -1,5 +1,6 @@
 package com.api.webReservas.controller;
 
+import com.api.webReservas.entity.Role;
 import com.api.webReservas.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = {"http://localhost:4200"})
-@SecurityRequirement(name = "Authorized")
 public class AuthController {
 
     @Autowired
@@ -38,6 +38,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        System.out.println(request.getName());
         return authService.login(request);
     }
 
@@ -47,11 +48,14 @@ public class AuthController {
      * @param user
      * @return
      */
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@AuthenticationPrincipal UserDetails userDetails, @RequestBody RegisterRequest user) {
         return authService.register((User) userDetails, user);
     }
+
     @GetMapping("/isActive")
+    @SecurityRequirement(name = "adminAuth")
     public ResponseEntity<Boolean> checkUserIsActive(@AuthenticationPrincipal UserDetails userDetails) {
         // Obtener el nombre de usuario del UserDetails
         String username = userDetails.getUsername();
