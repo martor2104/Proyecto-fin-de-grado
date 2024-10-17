@@ -1,5 +1,9 @@
 <app-reservas></app-reservas>
 
-<div class="map-container">
-    <img src="assets/mapa.jpg" alt="Mapa" class="map-image">
+<div class="container">
+  <!-- Recorremos las mesas y mostramos el número en cada cuadrado -->
+  <div class="square" *ngFor="let mesa of mesas" [id]="mesa.id">
+    {{ mesa.numero }}
   </div>
+</div>
+

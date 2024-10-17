@@ -1,28 +1,33 @@
-
 <div class="container mt-5">
-    <h2>Lista de Usuarios</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Email</th>
-          <th>Rol</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let usuario of usuarios">
-          <td>{{ usuario.id }}</td>
-          <td>{{ usuario.name }}</td>
-          <td>{{ usuario.email }}</td>
-          <td>{{ usuario.userRol }}</td>
-          <td>
-            <button class="btn btn-danger" (click)="deleteUsuario(usuario.id)">Eliminar</button>
-            <button class="btn btn-danger">Actualizar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <h2>Lista de Usuarios</h2>
+  <div class="mb-3">
+    <button class="btn btn-success" (click)="addUsuario()">Añadir Usuario</button>
   </div>
-  
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let usuario of usuarios">
+        <td>{{ usuario.id }}</td>
+        <td>{{ usuario.name }}</td>
+        <td>{{ usuario.email }}</td>
+        <td>{{ usuario.userRol }}</td>
+        <td>
+          <button class="btn btn-primary mr-2" 
+                  *ngIf="usuario.id !== null" 
+                  (click)="editUsuario(usuario.id!)">Actualizar</button>
+          <button class="btn btn-danger" 
+                  *ngIf="usuario.id !== null" 
+                  (click)="confirmDeleteUsuario(usuario.id!)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

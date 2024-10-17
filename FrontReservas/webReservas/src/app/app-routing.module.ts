@@ -10,9 +10,12 @@ import { ReservarMesaComponent } from './Componentes/reservar-mesa/reservar-mesa
 import { PlateFormComponent } from './Componentes/plate-form/plate-form.component';
 import { UsuariosComponent } from './Componentes/usuarios/usuarios.component';
 import { ReservaListadoComponent } from './Componentes/reserva-listado/reserva-listado.component';
+import { UsuariosFormComponent } from './Componentes/usuarios-form/usuarios-form.component';
 
 const routes: Routes = [
   { path: 'registro', component: RegistroComponent },
+  { path: 'user/form', component: UsuariosFormComponent},
+  { path: 'user/form/:id', component: UsuariosFormComponent},
   {path: 'carta', component: CartaComponent},
   {path: 'reservas', component: ReservasComponent},
   {path: 'login', component: LoginComponent},
