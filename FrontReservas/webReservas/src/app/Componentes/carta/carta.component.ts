@@ -20,7 +20,7 @@ export class CartaComponent implements OnInit {
     // Verificación del rol del usuario
     this.authService.getRole().subscribe(role => {
       console.log('User role:', role);
-      this.isAdmin = role?.toLowerCase() === 'admin';  // Asegurarse de que la comparación es correcta
+      this.isAdmin = role?.toLowerCase() === 'admin';
     });
 
     this.loadPlatos();

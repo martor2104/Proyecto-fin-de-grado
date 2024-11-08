@@ -10,7 +10,7 @@ import { AuthService } from '../../Servicios/AuthService/auth-service.service';
 export class HeaderComponent implements OnInit {
   isLoggedIn: boolean = false;
   username: string | null = '';
-  isAdmin: boolean = false; // Nueva propiedad para verificar si el usuario es admin
+  isAdmin: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -28,12 +28,12 @@ export class HeaderComponent implements OnInit {
     // Verificación del rol de admin
     this.authService.getRole().subscribe(role => {
       console.log('User role:', role);
-      this.isAdmin = role?.toLowerCase() === 'admin';  // Comprobar si el rol es admin
+      this.isAdmin = role?.toLowerCase() === 'admin'; 
     });
   }
 
   logout(): void {
     this.authService.logout();
-    this.router.navigate(['/login']); // Redirige al login
+    this.router.navigate(['/login']);
   }
 }

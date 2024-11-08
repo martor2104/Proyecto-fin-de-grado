@@ -19,3 +19,18 @@
   border: 2px solid darkblue;
   border-radius: 5px;
 }
+
+.square.mesa-usuario-loggeado {
+  background-color: green; /* Verde para reservas del usuario loggeado */
+  color: white;
+}
+
+.square.mesa-usuario-otro {
+  background-color: red; /* Rojo para reservas de otro usuario */
+  color: white;
+}
+
+button {
+  margin-left: -1000%;
+  width: 150px;
+}

@@ -21,7 +21,8 @@
               <label for="role">Rol</label>
               <select class="form-control" id="role" [(ngModel)]="registro.role" name="role" required>
                 <option value="USER">Cliente</option>
-                <option value="ADMIN">Administrador</option>
+                <!-- Solo mostrar la opción de Administrador si el usuario actual es Admin -->
+                <option *ngIf="isAdmin" value="ADMIN">Administrador</option>
               </select>
             </div>
             <button type="submit" class="btn btn-primary btn-block mt-4">Registrarse</button>

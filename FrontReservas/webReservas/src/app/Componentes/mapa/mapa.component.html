@@ -1,9 +1,19 @@
-<app-reservas></app-reservas>
-
 <div class="container">
-  <!-- Recorremos las mesas y mostramos el número en cada cuadrado -->
-  <div class="square" *ngFor="let mesa of mesas" [id]="mesa.id">
-    {{ mesa.numero }}
+  <!-- Mostrar el botón solo si el usuario es administrador -->
+  <button *ngIf="isAdmin" class="btn btn-success mb-3" (click)="addMesa()">Añadir Mesa</button>
+
+  <!-- Lista de mesas con clase condicional para reservas -->
+  <div
+    class="square"
+    *ngFor="let mesa of mesas"
+    [id]="mesa.numeroMesa"
+    [ngClass]="{
+      'mesa-usuario-loggeado': usuarioActualId !== null && mesa.reservation?.user?.id === usuarioActualId,
+      'mesa-usuario-otro': usuarioActualId !== null && mesa.reservation?.user?.id !== usuarioActualId && mesa.reservation,
+      'mesa-sin-reserva': !mesa.reservation
+    }"
+    (click)="actualizarMesa(mesa)"
+  >
+    {{ mesa.numeroMesa }}
   </div>
 </div>
-

@@ -23,12 +23,6 @@ export class AuthService {
     return this.username.asObservable();
   }
 
-  getUserId(): Observable<string | null> {
-    return this.http.get<{ userId: string | null }>(`${this.apiUrl}/getUserId`).pipe(
-      map(response => response.userId)
-    );
-  }
-
   registrarUsuario(user: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register`, user);
   }
@@ -95,8 +89,43 @@ export class AuthService {
     return null;
   }
 
+  getUserIdFromToken(): number | null {
+    // Verifica si `localStorage` está disponible
+    if (typeof localStorage === 'undefined') {
+      console.warn('localStorage no está disponible.');
+      return null;
+    }
+  
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken: any = jwt_decode(token);
+        const userId = decodedToken.userId;  // Asegúrate de que `userId` sea el campo correcto
+        return userId ? Number(userId) : null;
+      } catch (error) {
+        console.error('Error al decodificar el token', error);
+        return null;
+      }
+    }
+    return null;
+  }
+  
+  
+  
+  
+   
+
   private isBrowser(): boolean {
     return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
   }
+
+  getUserId(): Observable<number | null> {
+    return this.http.get<{ userId: string | null }>(`${this.apiUrl}/getUserId`).pipe(
+      map(response => response.userId ? Number(response.userId) : null)
+    );
+  }
+  
+
+
 }
 

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UserDTO } from '../../Model/usuario.model';
+import { User } from '../../Model/user.model';
 import { UsuariosServiceService } from '../../Servicios/usuarios/usuarios-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -10,7 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class UsuariosFormComponent implements OnInit {
 
-  usuario: UserDTO = {
+  usuario: User = {
     id: null, 
     name: '',
     email: '',
@@ -23,7 +23,7 @@ export class UsuariosFormComponent implements OnInit {
   constructor(
     private usuariosService: UsuariosServiceService,
     private router: Router,
-    private route: ActivatedRoute // Necesario para capturar el parámetro de la ruta
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -39,7 +39,7 @@ export class UsuariosFormComponent implements OnInit {
   loadUsuario(id: number): void {
     this.usuariosService.getUsuario(id).subscribe(
       (data) => {
-        this.usuario = data; // Asigna los datos del usuario al formulario
+        this.usuario = data; 
       },
       (error) => {
         console.error('Error al cargar usuario:', error);
@@ -50,9 +50,9 @@ export class UsuariosFormComponent implements OnInit {
   // Método para manejar el envío del formulario
   onSubmit(): void {
     if (this.isEditMode) {
-      this.updateUsuario(); // Si es edición, actualiza el usuario
+      this.updateUsuario(); 
     } else {
-      this.addUsuario(); // Si no es edición, añade un nuevo usuario
+      this.addUsuario(); 
     }
   }
 
@@ -60,7 +60,7 @@ export class UsuariosFormComponent implements OnInit {
   addUsuario(): void {
     this.usuariosService.addUsuario(this.usuario).subscribe(
       () => {
-        this.router.navigate(['/usuarios']); // Redirigir a la lista de usuarios después de añadir
+        this.router.navigate(['/usuarios']); 
       },
       (error) => {
         console.error('Error al añadir usuario:', error);
@@ -73,7 +73,7 @@ export class UsuariosFormComponent implements OnInit {
     if (this.usuario.id !== null) {
       this.usuariosService.updateUsuario(this.usuario.id, this.usuario).subscribe(
         () => {
-          this.router.navigate(['/usuarios']); // Redirigir a la lista de usuarios después de actualizar
+          this.router.navigate(['/usuarios']); 
         },
         (error) => {
           console.error('Error al actualizar usuario:', error);

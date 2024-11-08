@@ -14,15 +14,18 @@
         <li class="nav-item">
           <a routerLink="/reservas" routerLinkActive="active" class="nav-link">Reservas</a>
         </li>
+        <li class="nav-item">
+          <a routerLink="/reservas/mapa" routerLinkActive="active" class="nav-link">Mesas</a>
+        </li>
         
-        <!-- Menú Admin dentro del ul, solo visible si el usuario es ADMIN -->
+        <!-- Menú Admin, solo visible si el usuario es ADMIN -->
         <li class="nav-item dropdown" *ngIf="isAdmin">
           <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Admin
           </a>
           <ul class="dropdown-menu" aria-labelledby="adminDropdown">
             <li>
-              <a class="dropdown-item" routerLink="/mesas">Mesas</a>
+              <a class="dropdown-item" routerLink="/reservas/mapa">Mesas</a>
             </li>
             <li>
               <a class="dropdown-item" routerLink="/usuarios">Usuarios</a>

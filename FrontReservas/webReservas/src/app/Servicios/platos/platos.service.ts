@@ -20,7 +20,7 @@ export class PlatosService {
     return this.http.post<any>(this.apiUrl, plato);
   }
 
-  // Método para obtener un plato por ID (opcional)
+  // Método para obtener un plato por ID
   getPlato(id: number): Observable<any> {
     const url = `${this.apiUrl}/${id}`;
     return this.http.get<any>(url);
@@ -34,16 +34,16 @@ export class PlatosService {
 
   deletePlato(id: number): Observable<any> {
     const url = `${this.apiUrl}/${id}`;
-    const token = localStorage.getItem('token');  // Asegúrate de que el token esté en localStorage
+    const token = localStorage.getItem('token');
   
     console.log('Token JWT:', token);
   
-    // Configura los encabezados para incluir el token JWT
+    
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
   
-    return this.http.delete<any>(url, { headers });  // Añade los encabezados a la solicitud
+    return this.http.delete<any>(url, { headers }); 
   }
   
 

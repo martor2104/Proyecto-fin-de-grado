@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ReservasService } from '../../Servicios/reservas/reservas.service';
 import { Mesa } from '../../Model/mesa.model';
-import { Reserva } from '../../Model/reserva.model';
+import { Reservation } from '../../Model/reservation.model';
 
 interface ReservaDetalle {
   usuarioNombre: string;
@@ -30,11 +30,11 @@ export class ReservaListadoComponent implements OnInit {
       reservas => {
         this.reservasService.getMesas().subscribe(
           mesas => {
-            this.reservas = reservas.map((reserva: Reserva) => {
-              const mesa = mesas.find((m: Mesa) => m.reservaId === reserva.id);
+            this.reservas = reservas.map((reserva: Reservation) => {
+              const mesa = mesas.find((m: Mesa) => m.reservation && m.reservation.id === reserva.id);
               return {
-                usuarioNombre: reserva.usuario ? reserva.usuario.name : 'N/A',
-                fecha: reserva.fecha ? new Date(reserva.fecha) : new Date(),
+                usuarioNombre: reserva.user ? reserva.user.name : 'N/A',
+                fecha: reserva.reservationDate ? new Date(reserva.reservationDate) : new Date(),
                 numeroMesa: mesa ? mesa.id : null,
                 tableStatus: mesa ? mesa.tableStatus : 'UNKNOWN'
               };
@@ -46,4 +46,4 @@ export class ReservaListadoComponent implements OnInit {
       error => this.errorMessage = `Error al cargar las reservas: ${error.message}`
     );
   }
-}
+}  

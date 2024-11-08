@@ -1,7 +1,6 @@
 <div class="container mt-5">
   <button class="btn btn-success mb-3" (click)="openAddPlatoForm()" *ngIf="isAdmin">Añadir Nuevo Plato</button>
   <div class="row">
-    <!-- Tarjetas de platos existentes -->
     <div class="col-md-3 mb-4" *ngFor="let plato of platos">
       <div class="card">
         <div class="card-body">
