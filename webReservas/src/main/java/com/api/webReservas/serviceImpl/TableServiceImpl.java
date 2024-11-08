@@ -1,5 +1,6 @@
 package com.api.webReservas.serviceImpl;
 
+import com.api.webReservas.entity.TableStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,8 @@ import com.api.webReservas.entity.Table;
 import com.api.webReservas.entity.User;
 import com.api.webReservas.repository.TableRepository;
 import com.api.webReservas.service.TableService;
+
+import java.util.Optional;
 
 @Service
 public class TableServiceImpl implements TableService {
@@ -38,17 +41,6 @@ public class TableServiceImpl implements TableService {
 	}
 
 	@Override
-	public ResponseEntity<?> saveTable(User loggedUser, TableDTO table) {
-		
-        if (loggedUser.getRole().equals(Role.ADMIN)) {
-            Table newTable = new Table(table);
-            return ResponseEntity.status(HttpStatus.OK).body(Table.toDTO(repository.save(newTable)));
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You doesn't have permissions to save tables"));
-        }
-	}
-
-	@Override
 	public ResponseEntity<?> deleteTable(User loggedUser, Long id) {
 		if (loggedUser.getRole().equals(Role.ADMIN)) {
 			Table table = repository.findById(id).orElse(null);
@@ -66,23 +58,68 @@ public class TableServiceImpl implements TableService {
 	}
 
 	@Override
-	public ResponseEntity<?> putTable(User loggedUser, Long id, TableDTO table) {
-		if (loggedUser.getRole().equals(Role.ADMIN)) {
-			Table oldTable = repository.findById(id).orElse(null);
+	public ResponseEntity<?> putTable(User loggedUser, Long id, TableDTO tableDTO) {
+		// Verificar si el usuario es ADMIN
+		if (!loggedUser.getRole().equals(Role.ADMIN)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("No tienes permisos para modificar la mesa"));
+		}
 
-			if (oldTable != null) {
+		// Obtener la mesa actual
+		Table existingTable = repository.findById(id).orElse(null);
 
-				oldTable.setReservation((table.getReservation() != null)? table.getReservation() : oldTable.getReservation());
-				oldTable.setTableStatus((table.getTableStatus() != null)? table.getTableStatus() : oldTable.getTableStatus());
+		// Si la mesa no existe
+		if (existingTable == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("La mesa no existe"));
+		}
 
-				return ResponseEntity.status(HttpStatus.OK).body(Table.toDTO(repository.save(oldTable)));
-			} else {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("Table doesn't exist"));
-			}
+		// Actualizar los campos de la mesa
+		existingTable.setReservation((tableDTO.getReservation() != null) ? tableDTO.getReservation() : existingTable.getReservation());
 
+		// Verificar si se ha actualizado la reserva y cambiar el estado de la mesa en consecuencia
+		if (existingTable.getReservation() != null) {
+			existingTable.setTableStatus(TableStatus.RESERVED);  // Cambiar a OCUPED si la reserva no es null
 		} else {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You doesn't have permissions to modify table"));
+			existingTable.setTableStatus(TableStatus.PENDING);  // Mantener PENDING si la reserva es null
+		}
+
+		// Guardar la mesa actualizada
+		Table updatedTable = repository.save(existingTable);
+
+		// Devolver la mesa actualizada en el cuerpo de la respuesta
+		return ResponseEntity.status(HttpStatus.OK).body(Table.toDTO(updatedTable));
+	}
+
+
+
+	@Override
+	public ResponseEntity<?> addTable(User loggedUser, TableDTO tableDTO) {
+		if (!loggedUser.getRole().equals(Role.ADMIN)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permisos para añadir una mesa.");
+		}
+
+		Integer lastNumeroMesa = repository.findMaxNumeroMesa();
+		int newNumeroMesa = (lastNumeroMesa != null) ? lastNumeroMesa + 1 : 1;
+
+		// La reserva es null y el estado es PENDING al crear la mesa
+		Table newTable = Table.builder()
+				.reservation(null)  // No hay reserva al crear la mesa
+				.tableStatus(TableStatus.PENDING)  // Estado inicial es PENDING
+				.numeroMesa(newNumeroMesa)
+				.build();
+
+		repository.save(newTable);
+		return ResponseEntity.status(HttpStatus.CREATED).body(Table.toDTO(newTable));
+	}
+
+
+	public ResponseEntity<?> getMesaByNumero(int numeroMesa) {
+		Optional<Table> table = repository.findByNumeroMesa(numeroMesa);
+		if (table.isPresent()) {
+			return ResponseEntity.ok(Table.toDTO(table.get()));
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Mesa no encontrada");
 		}
 	}
+
 
 }

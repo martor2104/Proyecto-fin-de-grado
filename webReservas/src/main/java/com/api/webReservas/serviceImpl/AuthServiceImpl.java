@@ -1,5 +1,6 @@
 package com.api.webReservas.serviceImpl;
 
+import com.api.webReservas.entity.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseEntity<?> login(LoginRequest request) {
         try {
-            // Añadir un log para verificar si userRepository es null
+            // Verificar si userRepository está inicializado
             if (userRepository == null) {
                 System.out.println("UserRepository is null in login method");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorDTO("UserRepository is null"));
@@ -56,39 +57,49 @@ public class AuthServiceImpl implements AuthService {
             UserDetails userDetails = this.userRepository.findByOptionalName(request.getName())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-            // Verificar que el UserDetails se pueda convertir a User
             if (!(userDetails instanceof User)) {
                 throw new IllegalStateException("UserDetails cannot be cast to User");
             }
 
             User user = (User) userDetails;
 
-            // Crear los claims para el token JWT
+            // Crear los claims para el token JWT, incluyendo el ID del usuario
             Map<String, Object> claims = new HashMap<>();
             claims.put("role", user.getRole().name());
             claims.put("name", user.getName());
+            claims.put("userId", user.getId());  // Añadir el ID del usuario
 
-
-            // Generar el token JWT
+            // Generar el token JWT con los claims
             String token = jwtService.getToken(claims, userDetails);
 
             // Devolver la respuesta con el token
             return ResponseEntity.status(HttpStatus.OK).body(new AuthResponse(token));
 
         } catch (AuthenticationException e) {
-            // Añadir un log detallado del error
             System.out.println("Authentication failed for user: " + request.getName() + ". Error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Incorrect credentials"));
         } catch (Exception e) {
-            // Añadir un log detallado del error
             System.out.println("An error occurred during login for user: " + request.getName() + ". Error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorDTO("An error occurred"));
         }
     }
 
+
     @Override
     public ResponseEntity<?> register(User loggedUser, RegisterRequest request) {
         try {
+            // Verificar si el rol solicitado es ADMIN y el usuario logueado no es administrador
+            if ("ADMIN".equals(request.getRole()) && (loggedUser == null || loggedUser.getRole() != Role.ADMIN)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new ErrorDTO("Only administrators can register users with ADMIN role"));
+            }
+
+            // Si no es administrador, forzar el rol a USER
+            if (!"ADMIN".equals(request.getRole())) {
+                request.setRole("USER");
+            }
+
+            // Crear el nuevo usuario
             User newUser = new User(request);
             newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
             userRepository.save(newUser);
@@ -101,5 +112,8 @@ public class AuthServiceImpl implements AuthService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorDTO("Failed to register user"));
         }
     }
+
+
+
 }
 

@@ -33,6 +33,16 @@ public class UserController {
 		return userService.getById((User) userDetails, id);
 	}
 
+	@GetMapping("/id")
+	public ResponseEntity<Long> getUserId(@AuthenticationPrincipal UserDetails userDetails) {
+		if (userDetails != null) {
+			Long userId = ((User) userDetails).getId();
+			return ResponseEntity.ok(userId);
+		} else {
+			return ResponseEntity.status(401).build();
+		}
+	}
+
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Borra un usuario", description = "Deshabilita un usuario de la base de datos por su id")
 	public ResponseEntity<?> deleteUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {

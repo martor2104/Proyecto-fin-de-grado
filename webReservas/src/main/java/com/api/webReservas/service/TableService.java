@@ -12,6 +12,7 @@ public interface TableService {
 	ResponseEntity<?> getById(Long id);
 	ResponseEntity<?> deleteTable(User loggedUser, Long id);
 	ResponseEntity<?> putTable(User loggedUser, Long id, TableDTO table);
-	ResponseEntity<?> saveTable(User loggedUser, TableDTO table);
-	
+	ResponseEntity<?> addTable(User loggedUser, TableDTO table);
+	ResponseEntity<?> getMesaByNumero(int numeroMesa);
+
 }

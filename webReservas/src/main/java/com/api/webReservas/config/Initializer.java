@@ -1,5 +1,8 @@
 package com.api.webReservas.config;
 
+import com.api.webReservas.entity.Table;
+import com.api.webReservas.entity.TableStatus;
+import com.api.webReservas.repository.TableRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,21 +23,20 @@ public class Initializer implements CommandLineRunner {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
+	@Autowired
+	private TableRepository tableRepository;
+
 	@Override
 	public void run(String... args) throws Exception {
+/*
+		Table table = new Table();
 
-		/*
-		User user1 = new User();
+		table.setTableStatus(TableStatus.PENDING);
+		table.setReservation(null);
+		table.setNumeroMesa(1);
 
-		user1.setEmail("roberto.marqueztorres@gmail.com");
-		user1.setName("Roberto");
-		user1.setPassword(passwordEncoder.encode("1234"));
-		user1.setRole(Role.ADMIN);
+		tableRepository.save(table);
 */
-
-
-		//System.out.println("Encoded password: " + user1.getPassword());
-
 
 	}
 

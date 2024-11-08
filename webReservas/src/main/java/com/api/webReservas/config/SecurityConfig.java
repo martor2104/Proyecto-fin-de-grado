@@ -34,6 +34,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // Usa JWT sin sesiones
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()  // Rutas públicas
+                        .requestMatchers("/api/auth/id").permitAll()
+                        .requestMatchers("/api/tables/**").permitAll()
                         .requestMatchers("/api/plates/**").authenticated()  // Rutas protegidas para los platos
                         .requestMatchers("/api/users/**").authenticated()
                         .anyRequest().authenticated()  // Cualquier otra ruta requiere autenticación

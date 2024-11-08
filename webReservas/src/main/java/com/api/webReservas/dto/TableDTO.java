@@ -13,12 +13,14 @@ public class TableDTO {
 	private Long id;
 	private Reservation reservation;
 	private TableStatus tableStatus;
+	private int numeroMesa;
 	
 	
-	public TableDTO(Long id, Reservation reservation, TableStatus tableStatus) {
+	public TableDTO(Long id, Reservation reservation, TableStatus tableStatus, int numeroMesa) {
 		this.id=id;
 		this.reservation = reservation;
 		this.tableStatus = tableStatus;
+		this.numeroMesa = numeroMesa;
 	}
 	public Long getId() {
 		return id;
@@ -38,6 +40,12 @@ public class TableDTO {
 	public void setTableStatus(TableStatus tableStatus) {
 		this.tableStatus = tableStatus;
 	}
-	
-	
+
+	public int getNumeroMesa() {
+		return numeroMesa;
+	}
+
+	public void setNumeroMesa(int numeroMesa) {
+		this.numeroMesa = numeroMesa;
+	}
 }
