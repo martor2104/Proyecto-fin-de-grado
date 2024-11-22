@@ -6,4 +6,5 @@ export interface User {
     email: string;
     password: string;
     userRol: Role | null;
+    perfil?: string;
   }

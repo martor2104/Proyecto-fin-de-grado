@@ -1,19 +1,49 @@
-<div class="container">
-  <!-- Mostrar el botón solo si el usuario es administrador -->
-  <button *ngIf="isAdmin" class="btn btn-success mb-3" (click)="addMesa()">Añadir Mesa</button>
+<button *ngIf="isAdmin" class="btn btn-success mb-3" (click)="addMesa()">Añadir Mesa</button>
 
-  <!-- Lista de mesas con clase condicional para reservas -->
-  <div
-    class="square"
-    *ngFor="let mesa of mesas"
-    [id]="mesa.numeroMesa"
-    [ngClass]="{
-      'mesa-usuario-loggeado': usuarioActualId !== null && mesa.reservation?.user?.id === usuarioActualId,
-      'mesa-usuario-otro': usuarioActualId !== null && mesa.reservation?.user?.id !== usuarioActualId && mesa.reservation,
-      'mesa-sin-reserva': !mesa.reservation
-    }"
-    (click)="actualizarMesa(mesa)"
-  >
-    {{ mesa.numeroMesa }}
+<!-- Imagen de fondo ocupando toda la pantalla -->
+<img id="fondo_reserva" src="assets/utilities/fondo_reservado.jpeg" alt="Fondo de una mesa reservada">
+
+<!-- Contenedor principal con mesas a la izquierda y carrusel a la derecha -->
+<div class="container-principal">
+  <!-- Contenedor de mesas a la izquierda -->
+  <div class="container-mesas">
+    <div
+      class="mesa"
+      *ngFor="let mesa of mesas"
+      (click)="actualizarMesa(mesa)"
+    >
+      <!-- Número de la mesa -->
+      <div class="mesa-numero">{{ mesa.numeroMesa }}</div>
+
+      <!-- Imagen de la mesa con clases condicionales según el estado -->
+      <img 
+        [src]="getMesaImage(mesa)"
+        alt="Mesa"
+        class="mesa-imagen"
+      />
+    </div>
+  </div>
+
+  <!-- Carrusel alineado a la derecha -->
+  <div id="carouselExampleFade" class="carousel slide carousel-fade container-carrusel" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="assets/utilities/salon1.jpg" class="d-block w-100" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="assets/utilities/salon2.jpg" class="d-block w-100" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="assets/utilities/salon3.jpg" class="d-block w-100" alt="...">
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
   </div>
 </div>

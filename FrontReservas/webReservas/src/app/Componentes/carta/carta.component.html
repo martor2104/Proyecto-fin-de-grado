@@ -1,14 +1,56 @@
+<img id="banner" src="assets/utilities/BANNER_MENU.png" alt="Banner mostrando la palabra menú">
 <div class="container mt-5">
-  <button class="btn btn-success mb-3" (click)="openAddPlatoForm()" *ngIf="isAdmin">Añadir Nuevo Plato</button>
-  <div class="row">
-    <div class="col-md-3 mb-4" *ngFor="let plato of platos">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">{{ plato.namePlate }}</h5>
-          <p class="card-text">{{ plato.description }}</p>
-          <p class="card-text">Precio: ${{ plato.price }}</p>
-          <button class="btn btn-primary mr-2" (click)="openEditPlatoForm(plato)" *ngIf="isAdmin">Editar</button>
-          <button class="btn btn-danger" (click)="borrarPlato(plato)" *ngIf="isAdmin">Borrar</button>
+  <button class="btn btn-success mb-3" *ngIf="isAdmin" (click)="toggleAddCategoryForm()">Añadir Nueva Categoría</button>
+
+  <!-- Formulario para añadir una nueva categoría -->
+  <div *ngIf="isAddingCategory" class="mb-3">
+    <input [(ngModel)]="newCategoryName" class="form-control mb-2" placeholder="Nombre de la nueva categoría">
+    <button class="btn btn-primary" (click)="addCategory()">Guardar Categoría</button>
+  </div>
+
+  <!-- Accordion for Categories -->
+  <div class="accordion" id="menuAccordion">
+    <div *ngFor="let categoria of categorias; let i = index" class="accordion-item">
+      <h2 class="accordion-header" [attr.id]="'heading' + i">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" 
+                [attr.data-bs-target]="'#collapse' + i" 
+                [attr.aria-expanded]="i === 0 ? 'true' : 'false'" 
+                [attr.aria-controls]="'collapse' + i">
+          {{ categoria.nombre }}
+        </button>
+      </h2>
+
+      <div [attr.id]="'collapse' + i" class="accordion-collapse collapse" 
+           [class.show]="i === 0" 
+           [attr.aria-labelledby]="'heading' + i" 
+           data-bs-parent="#menuAccordion">
+        <div class="accordion-body">
+          <button class="btn btn-success mb-3" 
+                  (click)="openAddPlatoForm(categoria.nombre)" 
+                  *ngIf="isAdmin">
+            Añadir Plato a {{ categoria.nombre }}
+          </button>
+
+          <!-- List of Plates for this Category -->
+          <div class="row">
+            <div class="col-md-3 mb-4" *ngFor="let plato of categoria.platos">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">{{ plato.namePlate }}</h5>
+                  <img [src]="plato.img" alt="Imagen del plato" class="comida img-fluid mb-2">
+                  <p class="card-text">{{ plato.description }}</p>
+                  <p class="card-text">Precio: ${{ plato.price }}</p>
+                  <button class="btn btn-primary mr-2" 
+                          (click)="openEditPlatoForm(plato)" 
+                          *ngIf="isAdmin">Editar</button>
+                  <button class="btn btn-danger" 
+                          (click)="borrarPlato(plato)" 
+                          *ngIf="isAdmin">Borrar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

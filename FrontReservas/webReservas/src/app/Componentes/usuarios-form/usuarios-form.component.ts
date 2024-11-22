@@ -15,9 +15,11 @@ export class UsuariosFormComponent implements OnInit {
     name: '',
     email: '',
     password: '',
-    userRol: null
+    userRol: null,
+    perfil: ''
   };
 
+  selectedFile: File | null = null; // Archivo de imagen seleccionado
   isEditMode: boolean = false; // Indicador de si es modo edición
 
   constructor(
@@ -27,15 +29,17 @@ export class UsuariosFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Comprueba si hay un ID en la ruta para determinar si es una edición
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.isEditMode = true;
-      this.loadUsuario(+id); // Carga los datos del usuario si hay un ID
+      this.loadUsuario(+id); 
     }
   }
 
-  // Método para cargar los datos del usuario cuando estamos en modo edición
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0] || null;
+  }
+
   loadUsuario(id: number): void {
     this.usuariosService.getUsuario(id).subscribe(
       (data) => {
@@ -47,38 +51,52 @@ export class UsuariosFormComponent implements OnInit {
     );
   }
 
-  // Método para manejar el envío del formulario
   onSubmit(): void {
-    if (this.isEditMode) {
-      this.updateUsuario(); 
-    } else {
-      this.addUsuario(); 
+    const formData = new FormData();
+    
+    // Convertir el objeto usuario a JSON y añadirlo al FormData
+    const userBlob = new Blob([JSON.stringify(this.usuario)], { type: 'application/json' });
+    formData.append('user', userBlob);
+    
+    // Añadir la imagen de perfil si está presente
+    if (this.selectedFile) {
+      formData.append('image', this.selectedFile, this.selectedFile.name);
     }
-  }
+  
+    if (this.isEditMode) {
+      this.updateUsuario(formData);
+    } else {
+      this.addUsuario(formData);
+    }
+  }  
 
-  // Método para añadir un nuevo usuario
-  addUsuario(): void {
-    this.usuariosService.addUsuario(this.usuario).subscribe(
-      () => {
-        this.router.navigate(['/usuarios']); 
-      },
-      (error) => {
-        console.error('Error al añadir usuario:', error);
-      }
+  addUsuario(formData: FormData): void {
+    this.usuariosService.addUsuario(formData).subscribe(
+      () => this.router.navigate(['/usuarios']),
+      (error) => console.error('Error al añadir usuario:', error)
     );
   }
 
-  // Método para actualizar un usuario existente
-  updateUsuario(): void {
+  updateUsuario(formData: FormData): void {
     if (this.usuario.id !== null) {
-      this.usuariosService.updateUsuario(this.usuario.id, this.usuario).subscribe(
+      this.usuariosService.updateUsuario(this.usuario.id, formData).subscribe(
         () => {
-          this.router.navigate(['/usuarios']); 
+          // Mostrar el mensaje de confirmación
+          window.alert('Usuario actualizado correctamente. Por favor, vuelve a iniciar sesión.');
+          
+          // Cerrar sesión
+          this.logoutAndRedirect();
         },
-        (error) => {
-          console.error('Error al actualizar usuario:', error);
-        }
+        (error) => console.error('Error al actualizar usuario:', error)
       );
     }
   }
+  
+  // Método para cerrar sesión y redirigir al login
+  logoutAndRedirect(): void {
+    // Aquí puedes incluir lógica para eliminar tokens, cookies, etc.
+    localStorage.clear(); // Por ejemplo, eliminar cualquier token almacenado
+    this.router.navigate(['/login']); // Redirigir al login
+  }
+  
 }

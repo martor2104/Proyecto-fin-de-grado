@@ -40,7 +40,7 @@ export class MapaComponent implements OnInit {
   loadMesas(): void {
     this.mesaService.getMesas().subscribe(
       (data) => {
-        this.mesas = data;
+        this.mesas = data.sort((a: { numeroMesa: number; }, b: { numeroMesa: number; }) => a.numeroMesa - b.numeroMesa);
         console.log('Mesas cargadas:', this.mesas);
       },
       (error) => {
@@ -54,6 +54,7 @@ export class MapaComponent implements OnInit {
       this.mesaService.addMesa().subscribe(
         (nuevaMesa) => {
           this.mesas.push(nuevaMesa);
+          this.mesas.sort((a, b) => a.numeroMesa - b.numeroMesa);
         },
         (error) => {
           console.error('Error al añadir mesa', error);
@@ -76,5 +77,14 @@ export class MapaComponent implements OnInit {
       console.warn('No tienes permiso para acceder a esta mesa.');
       alert('Esta mesa ya está reservada.');
     }
+  }
+
+  getMesaImage(mesa: any): string {
+    if (mesa.reservation) {
+      return mesa.reservation.user.id === this.usuarioActualId
+        ? 'assets/utilities/mesa_verde_RESPLANDOR.png'
+        : 'assets/utilities/mesa_roja_RESPLANDOR.png';
+    }
+    return 'assets/utilities/MESA_CHULI_ORIGINAL.png';
   }
 }

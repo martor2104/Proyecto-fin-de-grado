@@ -1,36 +1,105 @@
-.container {
-  display: grid;
-  grid-template-columns: repeat(5, 50px); /* Crea 5 columnas de 50px */
-  grid-gap: 10px; /* Espacio entre los cuadrados */
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
+/* Imagen de fondo que ocupa toda la pantalla */
+#fondo_reserva {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 118vh;
+  object-fit: cover; /* Ajusta la imagen al tamaño del contenedor */
+  z-index: 0;
 }
 
-.square {
-  width: 50px;
-  height: 50px;
-  background-color: lightblue;
+/* Contenedor principal con flexbox */
+.container-principal {
+  position: relative;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 100%;
+  height: 100vh;
+  z-index: 1; /* Coloca el contenido por encima de la imagen de fondo */
+}
+
+/* Contenedor de mesas a la izquierda */
+.container-mesas {
+  flex: 1; /* Ocupa el espacio restante en la izquierda */
+  display: grid;
+  grid-template-columns: repeat(5, 100px); /* Cinco columnas para organizar las mesas en filas de 5 */
+  gap: 15px;
+  padding: 20px;
+  overflow-y: auto; /* Permite hacer scroll si hay muchas mesas */
+  width: 90%;
+  height: 90%;
+}
+
+.mesa {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  text-align: center;
+  cursor: pointer;
+  background-color: white;
+  border-radius: 50%;
+
+}
+
+.mesa-numero {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 16px;
   font-weight: bold;
-  border: 2px solid darkblue;
+  color: white;
+}
+
+.mesa-imagen {
+  width: 100%;
+  height: 100%;
   border-radius: 5px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.square.mesa-usuario-loggeado {
-  background-color: green; /* Verde para reservas del usuario loggeado */
-  color: white;
+/* Estilos para imágenes de mesas según el estado de reserva */
+.mesa-usuario-loggeado .mesa-imagen {
+  border-color: green;
 }
 
-.square.mesa-usuario-otro {
-  background-color: red; /* Rojo para reservas de otro usuario */
-  color: white;
+.mesa-usuario-otro .mesa-imagen {
+  border-color: red;
 }
 
-button {
-  margin-left: -1000%;
-  width: 150px;
+/* Contenedor del carrusel a la derecha */
+.container-carrusel {
+  flex: 1;
+  padding: 20px;
+  top: 13%;
+  max-width: 50%; /* Tamaño máximo del carrusel */
+  margin-left: auto; /* Alinea el carrusel a la derecha */
+}
+
+#carouselExampleFade{
+  height: 50%;
+}
+
+button{
+  z-index: 50;
+}
+
+button.btn-success {
+  position: relative; 
+  z-index: 10; 
+  font-size: 1.2em; 
+  padding: 10px 20px; 
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3); 
+  border: 2px solid #28a745;
+  background-color: #28a745; 
+  color: white; 
+  border-radius: 8px; 
+  transition: transform 0.2s ease, box-shadow 0.2s ease; 
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+button.btn-success:hover {
+  transform: scale(1.05); 
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.4); 
 }

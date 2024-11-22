@@ -1,51 +1,34 @@
-<div class="container mt-5">
-  <h2>Reservar Mesa {{ mesa?.numeroMesa }}</h2>
+<!-- Imagen de fondo ocupando toda la pantalla -->
+<img id="fondo_reserva" src="assets/utilities/fondo_reservado.jpeg" alt="Fondo de una mesa reservada">
 
-  <!-- Mostrar mensaje de confirmación o error -->
-  <div *ngIf="mensaje" class="alert alert-info">
-    {{ mensaje }}
+<!-- Contenedor del formulario de reserva -->
+<div class="container-centro">
+  <div class="container mt-5 formulario-reserva">
+    <h2>Reservar Mesa {{ mesa?.numeroMesa }}</h2>
+
+    <!-- Mostrar mensaje de confirmación o error -->
+    <div *ngIf="mensaje" class="alert alert-info">
+      {{ mensaje }}
+    </div>
+
+    <!-- Información de reserva -->
+    <div *ngIf="mesa?.reservation?.user?.id === usuarioActualId || mesa?.reservation != null && isAdmin; else reservationForm">
+      <p><strong>Fecha de la Reserva:</strong> {{ mesa?.reservation?.reservationDate | date }}</p>
+      <button type="button" class="btn btn-warning mt-3" (click)="cancelarReserva()">Cancelar Reserva</button>
+    </div>
+
+    <!-- Formulario para reservar la mesa -->
+    <ng-template #reservationForm>
+      <form (ngSubmit)="reservarMesa()">
+        <div class="form-group">
+          <label for="fechaReserva">Fecha de Reserva</label>
+          <input type="date" id="fechaReserva" class="form-control" [(ngModel)]="reservationDate" name="fechaReserva" required />
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Reservar Mesa</button>
+      </form>
+    </ng-template>
+
+    <!-- Botón de Borrar Mesa, visible solo para administradores -->
+    <button type="button" class="btn btn-danger mt-3 ml-2" (click)="borrarMesa()" *ngIf="isAdmin">Borrar Mesa</button>
   </div>
-
-  <!-- Mostrar información de la reserva si la mesa está reservada por el usuario logueado -->
-  <div *ngIf="mesa?.reservation?.user?.id === usuarioActualId || mesa?.reservation != null && isAdmin; else reservationForm">
-    <p><strong>Fecha de la Reserva:</strong> {{ mesa?.reservation?.reservationDate | date }}</p>
-    
-    <!-- Botón de Cancelar Reserva, visible solo si el usuario es el dueño de la reserva -->
-    <button
-      type="button"
-      class="btn btn-warning mt-3"
-      (click)="cancelarReserva()"
-    >
-      Cancelar Reserva
-    </button>
-  </div>
-
-  <!-- Formulario para reservar la mesa (mostrado solo si la mesa no está reservada por el usuario logueado) -->
-  <ng-template #reservationForm>
-    <form (ngSubmit)="reservarMesa()">
-      <div class="form-group">
-        <label for="fechaReserva">Fecha de Reserva</label>
-        <input
-          type="date"
-          id="fechaReserva"
-          class="form-control"
-          [(ngModel)]="reservationDate"
-          name="fechaReserva"
-          required
-        />
-      </div>
-
-      <button type="submit" class="btn btn-primary mt-3">Reservar Mesa</button>
-    </form>
-  </ng-template>
-
-  <!-- Botón de Borrar Mesa, visible solo para administradores -->
-  <button
-    type="button"
-    class="btn btn-danger mt-3 ml-2"
-    (click)="borrarMesa()"
-    *ngIf="isAdmin"
-  >
-    Borrar Mesa
-  </button>
 </div>

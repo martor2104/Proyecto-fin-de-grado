@@ -24,9 +24,8 @@ export class UsuariosServiceService {
   }
 
   // Método para actualizar un usuario existente
-  updateUsuario(id: number, usuario: User): Observable<User> {
-    const url = `${this.apiUrl}/${id}`;
-    return this.http.put<User>(url, usuario);
+  updateUsuario(userId: number, formData: FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${userId}`, formData);
   }
 
   // Método para eliminar un usuario
@@ -35,7 +34,7 @@ export class UsuariosServiceService {
     return this.http.delete<void>(url);
   }
 
-  addUsuario(usuario: User): Observable<User>{
-    return this.http.post<User>(`${this.apiUrl}`, usuario);
+  addUsuario(formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}`, formData);
   }
 }

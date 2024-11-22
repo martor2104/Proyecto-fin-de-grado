@@ -15,6 +15,7 @@ const routes: Routes = [
   { path: 'registro', component: RegistroComponent },
   { path: 'user/form', component: UsuariosFormComponent},
   { path: 'user/form/:id', component: UsuariosFormComponent},
+  { path: '', component: CartaComponent},
   {path: 'carta', component: CartaComponent},
   {path: 'reservas', component: ReservasComponent},
   {path: 'login', component: LoginComponent},

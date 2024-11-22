@@ -87,7 +87,7 @@ export class ReservarMesaComponent implements OnInit {
       this.reservasService.crearReserva(nuevaReserva, this.mesa.id).subscribe(
         (response) => {
           this.mensaje = 'Mesa reservada con éxito.';
-          this.router.navigate(['/reservas']);
+          this.router.navigate(['/reservas/mapa']);
         },
         (error) => {
           console.error('Error al reservar la mesa:', error);
