@@ -1,6 +1,8 @@
 package com.api.webReservas.serviceImpl;
 
+
 import com.api.webReservas.entity.Role;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +44,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseEntity<?> login(LoginRequest request) {
         try {
+
             // Verificar si userRepository está inicializado
             if (userRepository == null) {
                 System.out.println("UserRepository is null in login method");
@@ -70,20 +73,25 @@ public class AuthServiceImpl implements AuthService {
             claims.put("userId", user.getId());
             claims.put("perfil", user.getPerfil());
 
+
             // Generar el token JWT con los claims
+
             String token = jwtService.getToken(claims, userDetails);
 
             // Devolver la respuesta con el token y la URL de la imagen de perfil
             return ResponseEntity.status(HttpStatus.OK).body(new AuthResponse(token, user.getPerfil()));
 
         } catch (AuthenticationException e) {
+
             System.out.println("Authentication failed for user: " + request.getName() + ". Error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Incorrect credentials"));
         } catch (Exception e) {
+
             System.out.println("An error occurred during login for user: " + request.getName() + ". Error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorDTO("An error occurred"));
         }
     }
+
 
 
 
@@ -114,12 +122,14 @@ public class AuthServiceImpl implements AuthService {
             }
 
             // Crear el nuevo usuario
+
             User newUser = new User(request);
             newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
             userRepository.save(newUser);
 
             Map<String, String> response = new HashMap<>();
             response.put("message", "User registered successfully");
+
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
@@ -130,6 +140,13 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorDTO("Failed to register user"));
+        }
+    }
+}
 
 
 

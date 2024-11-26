@@ -17,7 +17,9 @@ public class PlateDTO {
 	public PlateDTO() {
 	}
 	
+
 	public PlateDTO(Long id, String namePlate, String description, Double price, String img, String category) {
+
 		this.id = id;
 		this.namePlate = namePlate;
 		this.description = description;

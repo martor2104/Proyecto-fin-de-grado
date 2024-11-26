@@ -1,8 +1,10 @@
 package com.api.webReservas.config;
 
+
 import com.api.webReservas.entity.Table;
 import com.api.webReservas.entity.TableStatus;
 import com.api.webReservas.repository.TableRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,6 +39,7 @@ public class Initializer implements CommandLineRunner {
 
 		tableRepository.save(table);
 */
+
 
 	}
 

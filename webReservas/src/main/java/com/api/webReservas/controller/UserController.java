@@ -1,5 +1,6 @@
 package com.api.webReservas.controller;
 
+
 import com.api.webReservas.dto.ErrorDTO;
 import com.api.webReservas.dto.MessageDTO;
 import com.api.webReservas.serviceImpl.UserServiceImpl;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +20,9 @@ import com.api.webReservas.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import org.springframework.web.multipart.MultipartFile;
+
 
 @RestController
 @RequestMapping("/api/users")
@@ -26,6 +30,7 @@ public class UserController {
 
 	@Autowired
 	private UserServiceImpl userService;
+
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping()
@@ -39,6 +44,7 @@ public class UserController {
 	public ResponseEntity<?> getUserById(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
 		return userService.getById((User) userDetails, id);
 	}
+
 
 	@GetMapping("/id")
 	public ResponseEntity<Long> getUserId(@AuthenticationPrincipal UserDetails userDetails) {
@@ -55,6 +61,7 @@ public class UserController {
 	public ResponseEntity<?> deleteUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
 		return userService.deleteUser((User) userDetails, id);
 	}
+
 
 	@PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@Operation(summary = "Actualiza un usuario", description = "Actualiza un usuario por su id")
@@ -95,4 +102,3 @@ public class UserController {
 		}
 	}
 }
-

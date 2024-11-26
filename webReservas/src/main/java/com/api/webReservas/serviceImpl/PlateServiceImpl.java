@@ -19,6 +19,7 @@ import com.api.webReservas.entity.Role;
 import com.api.webReservas.entity.User;
 import com.api.webReservas.repository.PlateRepository;
 import com.api.webReservas.service.PlateService;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.Optional;
+
 
 @Service
 public class PlateServiceImpl implements PlateService{
@@ -55,6 +57,7 @@ public class PlateServiceImpl implements PlateService{
 	}
 
 	@Override
+
 	public ResponseEntity<?> savePlate(User loggedUser, PlateDTO plateDTO, MultipartFile image) {
 		if (!loggedUser.getRole().equals(Role.ADMIN)) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("No tienes permisos para guardar platos"));
@@ -129,6 +132,7 @@ public class PlateServiceImpl implements PlateService{
 	public ResponseEntity<?> deletePlate(Long id, UserDetails userDetails) {
 		if (userDetails == null) {
 			System.out.println("Usuario no autenticado");
+
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 					.body(Map.of("error", "Usuario no autenticado"));
 		}
@@ -145,12 +149,15 @@ public class PlateServiceImpl implements PlateService{
 		System.out.println("¿El usuario tiene rol de ADMIN?: " + isAdmin);
 
 		if (!isAdmin) {
+
 			return ResponseEntity.status(HttpStatus.FORBIDDEN)
 					.body(Map.of("error", "No tienes permisos para eliminar este plato"));
+
 		}
 
 		Plate plate = repository.findById(id).orElse(null);
 		if (plate == null) {
+
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(Map.of("error", "Plato no encontrado"));
 		}
@@ -160,6 +167,4 @@ public class PlateServiceImpl implements PlateService{
 		// Respuesta JSON válida
 		return ResponseEntity.ok(Map.of("message", "Plato eliminado"));
 	}
-
-
 }

@@ -13,6 +13,7 @@ public interface TableRepository extends JpaRepository<Table, Long>{
 
     void deleteByReservationId(Long reservationId);
 
+
     @Modifying
     @Transactional
     @Query("UPDATE tables t SET t.reservation = NULL WHERE t.reservation.id = :reservationId")

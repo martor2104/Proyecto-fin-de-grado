@@ -1,8 +1,10 @@
 package com.api.webReservas.serviceImpl;
 
+
 import com.api.webReservas.dto.SuccessDTO;
 import com.api.webReservas.entity.Reservation;
 import com.api.webReservas.entity.Table;
+
 import com.api.webReservas.jwt.JwtUserDetails;
 import com.api.webReservas.repository.ReservationRepository;
 import com.api.webReservas.repository.TableRepository;
@@ -28,6 +30,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.Optional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -102,6 +107,7 @@ public class UserServiceImpl implements UserService{
 		if (loggedUser.getRole().equals(Role.ADMIN)) {
 			User user = userRepository.findById(id).orElse(null);
 
+
 			if (user != null) {
 				// Obtiene todas las reservas del usuario
 				List<Reservation> reservations = reservationRepository.findByUserId(user.getId());
@@ -133,6 +139,7 @@ public class UserServiceImpl implements UserService{
 
 
 	@Override
+
 	public ResponseEntity<?> putUser(User loggedUser, Long id, UserDTO userDTO, MultipartFile image) {
 		// Si el usuario no es ADMIN, se asegura de que solo pueda actualizar su propio perfil
 		if (!loggedUser.getId().equals(id) && !loggedUser.getRole().equals(Role.ADMIN)) {
@@ -147,6 +154,7 @@ public class UserServiceImpl implements UserService{
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ErrorDTO("El usuario no existe"));
 		}
+
 
 		// Actualizar los campos si no son nulos
 		oldUser.setName(userDTO.getName() != null ? userDTO.getName() : oldUser.getName());
@@ -218,6 +226,53 @@ public class UserServiceImpl implements UserService{
 				.body("Usuario añadido correctamente.");
 	}
 
+
+	@Override
+	public User findByUsername(String username) {
+		Optional<User> userOptional = userRepository.findByOptionalName(username);
+
+		if (userOptional.isPresent()) {
+			User user = userOptional.get();
+			return user;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public Long getUserId() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && authentication.getPrincipal() instanceof JwtUserDetails) {
+			JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
+			return userDetails.getId();
+		}
+		return null;
+	}
+
+	@Override
+	public ResponseEntity<?> addUser(User loggedUser, UserDTO userDTO) {
+		if (!loggedUser.getRole().equals(Role.ADMIN)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+					.body("No tienes permisos para añadir un usuario.");
+		}
+
+		if (userRepository.existsByEmail(userDTO.getEmail())) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body("Ya existe un usuario con este email.");
+		}
+
+		User newUser = new User();
+		newUser.setName(userDTO.getName());
+		newUser.setEmail(userDTO.getEmail());
+		newUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+		newUser.setRole(userDTO.getUserRol().equals(Role.ADMIN) ? Role.ADMIN : Role.USER);
+
+
+		userRepository.save(newUser);
+
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body("Usuario añadido correctamente.");
+	}
 
 	@Override
 	public User findByUsername(String username) {

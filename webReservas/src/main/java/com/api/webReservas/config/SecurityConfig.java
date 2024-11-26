@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/tables/**").permitAll()
                         .requestMatchers("/api/plates/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
+
                         .anyRequest().authenticated()  // Cualquier otra ruta requiere autenticación
                 )
                 .authenticationProvider(authenticationProvider)  // Establece el proveedor de autenticación

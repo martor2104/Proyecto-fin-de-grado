@@ -35,12 +35,13 @@ public class Plate {
 	@Column(nullable = false)
 	private Double price;
 
+
 	@Column
 	private String img;
 
 	@Column
 	private String category;
-
+  
 	public Plate(PlateDTO plate) {
 		this.id = plate.getId();
 		this.namePlate = plate.getNamePlate();

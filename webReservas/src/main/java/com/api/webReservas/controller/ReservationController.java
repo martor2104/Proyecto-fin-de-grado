@@ -31,11 +31,13 @@ public class ReservationController {
         return reservationService.getById(id);
     }
 
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Borra una reserva", description = "Deshabilita una reserva de la base de datos por su id")
     @SecurityRequirement(name = "adminAuth")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<?> deleteReservation(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+
         return reservationService.deleteReservation((User) userDetails, id);
     }
 

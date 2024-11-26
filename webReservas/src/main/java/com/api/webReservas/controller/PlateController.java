@@ -7,10 +7,12 @@ import com.api.webReservas.service.PlateService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -47,6 +49,7 @@ public class PlateController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");
         }
         return plateService.deletePlate(id, user);  // Pasa el objeto `User` correctamente
+
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -102,10 +105,4 @@ public class PlateController {
         // Llamar al servicio para guardar el plato
         return plateService.savePlate((User) loggedUser, plateDTO, image);
     }
-
-
-
-
-
-
 }
