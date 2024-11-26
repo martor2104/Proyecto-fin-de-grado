@@ -1,5 +1,6 @@
 package com.api.webReservas.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 	
-	
+	@Autowired
 	 private UserRepository userRepository;
 
 	    @Bean
@@ -45,7 +46,7 @@ public class ApplicationConfig {
 
 	    @Bean
 	    public UserDetailsService userDetailService() {
-	        return name -> (UserDetails) userRepository.findByName(name)
+	        return name -> (UserDetails) userRepository.findByOptionalName(name)
 	        .orElseThrow(()-> new UsernameNotFoundException("User not fournd"));
 	    }
 

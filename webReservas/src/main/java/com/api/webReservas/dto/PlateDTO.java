@@ -8,17 +8,22 @@ import lombok.Data;
 public class PlateDTO {
 
 	private Long id;
-	private String reservation;
 	private String namePlate;
 	private String description;
 	private Double price;
+	private String img;
+	private String category;
+
+	public PlateDTO() {
+	}
 	
-	public PlateDTO(Long id, String reservation, String namePlate, String description, Double price) {
+	public PlateDTO(Long id, String namePlate, String description, Double price, String img, String category) {
 		this.id = id;
-		this.reservation = reservation;
 		this.namePlate = namePlate;
 		this.description = description;
 		this.price = price;
+		this.img = img;
+		this.category = category;
 	}
 	
 	public Long getId() {
@@ -26,12 +31,6 @@ public class PlateDTO {
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public String getReservation() {
-		return reservation;
-	}
-	public void setReservation(String reservation) {
-		this.reservation = reservation;
 	}
 	public String getNamePlate() {
 		return namePlate;
@@ -51,6 +50,16 @@ public class PlateDTO {
 	public void setPrice(Double price) {
 		this.price = price;
 	}
-	
-	
+	public String getImg() {
+		return img;
+	}
+	public void setImg(String img) {
+		this.img = img;
+	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
+	}
 }

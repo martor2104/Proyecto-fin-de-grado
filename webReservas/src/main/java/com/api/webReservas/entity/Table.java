@@ -3,15 +3,7 @@ package com.api.webReservas.entity;
 import com.api.webReservas.dto.PlateDTO;
 import com.api.webReservas.dto.TableDTO;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,7 +20,7 @@ public class Table {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "reserva_id")
 	private Reservation reservation;
 	
@@ -36,9 +28,13 @@ public class Table {
 	@Enumerated(EnumType.STRING)
 	private TableStatus tableStatus;
 
+	@Column(nullable = false, unique = true)
+	private int numeroMesa;
+
 	public Table(TableDTO table) {
 		this.id = table.getId();
 		this.reservation = table.getReservation();
+		this.numeroMesa = table.getNumeroMesa();
 	}
 
 	public static TableDTO toDTO(Table table) {
@@ -48,7 +44,8 @@ public class Table {
         return new TableDTO(
         		table.getId(),
         		table.getReservation(),
-        		table.getTableStatus()
+        		table.getTableStatus(),
+				table.getNumeroMesa()
 			);
     }
 
@@ -75,6 +72,12 @@ public class Table {
 	public void setTableStatus(TableStatus tableStatus) {
 		this.tableStatus = tableStatus;
 	}
-	
-	
+
+	public int getNumeroMesa() {
+		return numeroMesa;
+	}
+
+	public void setNumeroMesa(int numeroMesa) {
+		this.numeroMesa = numeroMesa;
+	}
 }

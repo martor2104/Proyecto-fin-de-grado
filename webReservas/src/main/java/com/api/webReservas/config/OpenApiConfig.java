@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
         )
 )
 @SecurityScheme(
-        name = "Authorized",
+        name = "adminAuth",
         description = "Authorizations of type admin",
         scheme = "bearer",
         type = SecuritySchemeType.HTTP,

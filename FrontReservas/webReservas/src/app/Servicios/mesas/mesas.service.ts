@@ -16,13 +16,13 @@ export class MesasService {
     return this.http.get<any>(`${this.apiURL}`);
   }
 
-  addMesa(): Observable<Mesa> {
+  addMesa(mesaData: { numeroMesa: number }): Observable<any> {
     const nuevaMesa = {
       tableStatus: 'PENDING',
       reservation: null
     };
 
-    return this.http.post<Mesa>(this.apiURL, nuevaMesa);
+    return this.http.post(this.apiURL, mesaData);
   }
 
   getMesaByNumero(numeroMesa: number): Observable<Mesa> {

@@ -50,21 +50,36 @@ export class MapaComponent implements OnInit {
   }
 
   addMesa(): void {
-    if (this.isAdmin) {
-      this.mesaService.addMesa().subscribe(
+    const numeroMesa = prompt('Introduce el número de la nueva mesa:');
+  
+    if (numeroMesa !== null && numeroMesa.trim() !== '') {
+      const numeroMesaInt = parseInt(numeroMesa, 10);
+  
+      if (isNaN(numeroMesaInt) || numeroMesaInt <= 0) {
+        alert('Por favor, introduce un número válido para la mesa.');
+        return;
+      }
+  
+      // Crear un objeto con la propiedad `numeroMesa`
+      const mesaData = { numeroMesa: numeroMesaInt };
+  
+      this.mesaService.addMesa(mesaData).subscribe(
         (nuevaMesa) => {
           this.mesas.push(nuevaMesa);
           this.mesas.sort((a, b) => a.numeroMesa - b.numeroMesa);
         },
         (error) => {
           console.error('Error al añadir mesa', error);
+          alert(error.error || 'Hubo un error al añadir la mesa.');
         }
       );
     } else {
-      console.error('No tienes permisos para añadir una mesa.');
+      console.log('La operación de añadir mesa fue cancelada.');
     }
   }
-
+  
+  
+  
   actualizarMesa(mesa: any): void {
     if (this.usuarioActualId === null) {
       alert('Necesitas iniciar sesión o registrarte para acceder a esta mesa.');

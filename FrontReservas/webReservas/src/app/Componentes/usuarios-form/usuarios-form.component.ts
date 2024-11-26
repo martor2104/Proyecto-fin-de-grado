@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { User } from '../../Model/user.model';
 import { UsuariosServiceService } from '../../Servicios/usuarios/usuarios-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../Servicios/AuthService/auth-service.service';
 
 @Component({
   selector: 'app-usuarios-form',
@@ -21,11 +22,13 @@ export class UsuariosFormComponent implements OnInit {
 
   selectedFile: File | null = null; // Archivo de imagen seleccionado
   isEditMode: boolean = false; // Indicador de si es modo edición
+  
 
   constructor(
     private usuariosService: UsuariosServiceService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -81,16 +84,20 @@ export class UsuariosFormComponent implements OnInit {
     if (this.usuario.id !== null) {
       this.usuariosService.updateUsuario(this.usuario.id, formData).subscribe(
         () => {
-          // Mostrar el mensaje de confirmación
-          window.alert('Usuario actualizado correctamente. Por favor, vuelve a iniciar sesión.');
-          
-          // Cerrar sesión
-          this.logoutAndRedirect();
+          // Verificar si el usuario actualizado es el logueado
+          const usuarioActualId = this.authService.getUserIdFromToken(); // Obtén el ID del usuario logueado
+          if (this.usuario.id === usuarioActualId) {
+            window.alert('Usuario actualizado correctamente. Por favor, vuelve a iniciar sesión.');
+            this.logoutAndRedirect(); // Cierra sesión y redirige
+          } else {
+            window.alert('Usuario actualizado correctamente.');
+          }
         },
         (error) => console.error('Error al actualizar usuario:', error)
       );
     }
   }
+  
   
   // Método para cerrar sesión y redirigir al login
   logoutAndRedirect(): void {

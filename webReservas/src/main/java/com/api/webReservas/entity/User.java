@@ -47,13 +47,17 @@ public class User implements UserDetails {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
+	@Column
+	private String perfil;
+
 	public static UserDTO toDTO(User user) {
 		return new UserDTO(
 				user.getId(),
 				user.getName(),
 				user.getEmail(),
 				user.getPassword(),
-				user.getRole()
+				user.getRole(),
+				user.getPerfil()
 		);
 	}
 
@@ -61,7 +65,7 @@ public class User implements UserDetails {
 		this.name = user.getName();
 		this.email = user.getEmail();
 		this.password = user.getPassword();
-		this.role = user.getUserRol() != null ? user.getUserRol() : Role.USER;
+		this.role = user.getRole() != null && user.getRole().equalsIgnoreCase("Admin") ? Role.ADMIN : Role.USER;
 	}
 
 	@Override
@@ -98,4 +102,6 @@ public class User implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
+
+
 }

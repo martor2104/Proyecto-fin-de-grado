@@ -14,13 +14,15 @@ public class UserDTO {
 	private String email;
 	private String password;
 	private Role userRol;
+	private String perfil;
 	
-	public UserDTO(Long id, String name, String email, String password, Role userRol) {
+	public UserDTO(Long id, String name, String email, String password, Role userRol, String perfil) {
 		this.id = id;
 		this.name = name;
 		this.email = email;
 		this.password = password;
 		this.userRol = userRol;
+		this.perfil = perfil;
 	}
 	public Long getId() {
 		return id;
@@ -52,6 +54,10 @@ public class UserDTO {
 	public void setUserRol(Role userRol) {
 		this.userRol = userRol;
 	}
-	
-	
+	public String getPerfil() {
+		return perfil;
+	}
+	public void setPerfil(String perfil) {
+		this.perfil = perfil;
+	}
 }

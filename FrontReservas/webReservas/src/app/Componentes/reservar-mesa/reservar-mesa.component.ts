@@ -19,6 +19,7 @@ export class ReservarMesaComponent implements OnInit {
   mensaje: string = '';  
   isAdmin: boolean = false; 
   usuarioActualId: number | null = null; 
+  hoy: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -29,6 +30,8 @@ export class ReservarMesaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const today = new Date();
+    this.hoy = today.toISOString().split('T')[0]; // Formato 'YYYY-MM-DD'
     // Obtener el ID del usuario logueado
     this.usuarioActualId = this.authService.getUserIdFromToken();
     console.log("ID del usuario logueado:", this.usuarioActualId);
@@ -78,24 +81,36 @@ export class ReservarMesaComponent implements OnInit {
       this.mensaje = 'Por favor, seleccione una fecha para la reserva.';
       return;
     }
-
+  
+    const selectedDate = new Date(this.reservationDate);
+    const today = new Date();
+  
+    if (selectedDate < today) {
+      this.mensaje = 'No puedes reservar una mesa para una fecha pasada.';
+      return;
+    }
+  
     if (this.mesa) {
       const nuevaReserva: Reservation = {
         reservationDate: this.reservationDate
       };
-
+  
       this.reservasService.crearReserva(nuevaReserva, this.mesa.id).subscribe(
         (response) => {
           this.mensaje = 'Mesa reservada con éxito.';
           this.router.navigate(['/reservas/mapa']);
         },
         (error) => {
-          console.error('Error al reservar la mesa:', error);
-          this.mensaje = 'Error al reservar la mesa.';
+          if (error.status === 400 && error.error?.error === 'You cannot reserve a table for a date in the past') {
+            this.mensaje = 'No puedes reservar una mesa para una fecha pasada.';
+          } else {
+            this.mensaje = 'Error al reservar la mesa.';
+          }
         }
       );
     }
   }
+  
 
   cancelarReserva(): void {
     if (this.isAdmin || (this.mesa?.reservation?.user?.id === this.usuarioActualId)) {

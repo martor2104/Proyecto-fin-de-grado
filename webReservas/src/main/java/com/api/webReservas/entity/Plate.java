@@ -26,10 +26,6 @@ public class Plate {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
-	@ManyToOne
-	@JoinColumn(name = "menu_id")
-	private Reservation reservation;
-	
 	@Column(name = "name_plate", nullable = false)
 	private String namePlate;
 	
@@ -38,17 +34,31 @@ public class Plate {
 	
 	@Column(nullable = false)
 	private Double price;
-	
+
+	@Column
+	private String img;
+
+	@Column
+	private String category;
+
+	public Plate(PlateDTO plate) {
+		this.id = plate.getId();
+		this.namePlate = plate.getNamePlate();
+		this.description = plate.getDescription();
+		this.price = plate.getPrice();
+	}
+
 	public static PlateDTO toDTO(Plate plate) {
         if (plate == null) {
             return null;
         }
         return new PlateDTO(
 			    plate.getId(),
-			    plate.getReservation().getUser().getUsername(),
 			    plate.getNamePlate(),
 			    plate.getDescription(),
-			    plate.getPrice()
+			    plate.getPrice(),
+				plate.getImg(),
+				plate.getCategory()
 			);
     }
 
@@ -58,14 +68,6 @@ public class Plate {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Reservation getReservation() {
-		return reservation;
-	}
-
-	public void setReservation(Reservation reservation) {
-		this.reservation = reservation;
 	}
 
 	public String getNamePlate() {
@@ -91,6 +93,20 @@ public class Plate {
 	public void setPrice(Double price) {
 		this.price = price;
 	}
-	
-	
+
+	public String getImg() {
+		return img;
+	}
+
+	public void setImg(String img) {
+		this.img = img;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
 }
