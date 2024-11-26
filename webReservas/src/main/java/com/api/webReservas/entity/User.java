@@ -47,13 +47,17 @@ public class User implements UserDetails {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
+	@Column
+	private String perfil;
+
 	public static UserDTO toDTO(User user) {
 		return new UserDTO(
 				user.getId(),
 				user.getName(),
 				user.getEmail(),
 				user.getPassword(),
-				user.getRole()
+				user.getRole(),
+				user.getPerfil()
 		);
 	}
 

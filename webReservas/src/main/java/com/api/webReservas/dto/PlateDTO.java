@@ -11,12 +11,21 @@ public class PlateDTO {
 	private String namePlate;
 	private String description;
 	private Double price;
+	private String img;
+	private String category;
+
+	public PlateDTO() {
+	}
 	
-	public PlateDTO(Long id, String namePlate, String description, Double price) {
+
+	public PlateDTO(Long id, String namePlate, String description, Double price, String img, String category) {
+
 		this.id = id;
 		this.namePlate = namePlate;
 		this.description = description;
 		this.price = price;
+		this.img = img;
+		this.category = category;
 	}
 	
 	public Long getId() {
@@ -43,6 +52,16 @@ public class PlateDTO {
 	public void setPrice(Double price) {
 		this.price = price;
 	}
-	
-	
+	public String getImg() {
+		return img;
+	}
+	public void setImg(String img) {
+		this.img = img;
+	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
+	}
 }

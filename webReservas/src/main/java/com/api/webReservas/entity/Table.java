@@ -28,9 +28,13 @@ public class Table {
 	@Enumerated(EnumType.STRING)
 	private TableStatus tableStatus;
 
+	@Column(nullable = false, unique = true)
+	private int numeroMesa;
+
 	public Table(TableDTO table) {
 		this.id = table.getId();
 		this.reservation = table.getReservation();
+		this.numeroMesa = table.getNumeroMesa();
 	}
 
 	public static TableDTO toDTO(Table table) {
@@ -40,7 +44,8 @@ public class Table {
         return new TableDTO(
         		table.getId(),
         		table.getReservation(),
-        		table.getTableStatus()
+        		table.getTableStatus(),
+				table.getNumeroMesa()
 			);
     }
 
@@ -67,6 +72,12 @@ public class Table {
 	public void setTableStatus(TableStatus tableStatus) {
 		this.tableStatus = tableStatus;
 	}
-	
-	
+
+	public int getNumeroMesa() {
+		return numeroMesa;
+	}
+
+	public void setNumeroMesa(int numeroMesa) {
+		this.numeroMesa = numeroMesa;
+	}
 }

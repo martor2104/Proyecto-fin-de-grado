@@ -35,6 +35,13 @@ public class Plate {
 	@Column(nullable = false)
 	private Double price;
 
+
+	@Column
+	private String img;
+
+	@Column
+	private String category;
+  
 	public Plate(PlateDTO plate) {
 		this.id = plate.getId();
 		this.namePlate = plate.getNamePlate();
@@ -50,7 +57,9 @@ public class Plate {
 			    plate.getId(),
 			    plate.getNamePlate(),
 			    plate.getDescription(),
-			    plate.getPrice()
+			    plate.getPrice(),
+				plate.getImg(),
+				plate.getCategory()
 			);
     }
 
@@ -85,6 +94,20 @@ public class Plate {
 	public void setPrice(Double price) {
 		this.price = price;
 	}
-	
-	
+
+	public String getImg() {
+		return img;
+	}
+
+	public void setImg(String img) {
+		this.img = img;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
 }

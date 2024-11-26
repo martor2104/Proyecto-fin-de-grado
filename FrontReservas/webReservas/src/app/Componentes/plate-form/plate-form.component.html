@@ -1,23 +1,63 @@
 <div class="container d-flex justify-content-center mt-5">
-    <div class="card" style="width: 50%;">
-      <div class="card-body">
-        <h5 class="card-title">{{ isEditMode ? 'Actualizar Plato' : 'Añadir Nuevo Plato' }}</h5>
-        <form [formGroup]="platoForm" (ngSubmit)="onSubmit()">
-          <div class="form-group">
-            <label for="namePlate">Nombre del Plato</label>
-            <input type="text" class="form-control" id="namePlate" formControlName="namePlate">
-          </div>
-          <div class="form-group">
-            <label for="description">Descripción</label>
-            <textarea class="form-control" id="description" formControlName="description"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="price">Precio</label>
-            <input type="number" class="form-control" id="price" formControlName="price">
-          </div>
-          <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Guardar Cambios' : 'Añadir Plato' }}</button>
-        </form>
-      </div>
+  <div class="card" style="width: 50%;">
+    <div class="card-body">
+      <h5 class="card-title text-center">{{ isEditMode ? 'Actualizar Plato' : 'Añadir Nuevo Plato' }}</h5>
+      <form [formGroup]="platoForm" (ngSubmit)="onSubmit()">
+        
+        <!-- Campo para el nombre del plato -->
+        <div class="form-group">
+          <label for="namePlate">Nombre del Plato</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="namePlate" 
+            formControlName="namePlate" 
+            placeholder="Ej. Ensalada César" 
+            required>
+        </div>
+        
+        <!-- Campo para la descripción del plato -->
+        <div class="form-group">
+          <label for="description">Descripción</label>
+          <textarea 
+            class="form-control" 
+            id="description" 
+            formControlName="description" 
+            rows="3" 
+            placeholder="Describe el plato..." 
+            required></textarea>
+        </div>
+        
+        <!-- Campo para el precio del plato -->
+        <div class="form-group">
+          <label for="price">Precio</label>
+          <input 
+            type="number" 
+            class="form-control" 
+            id="price" 
+            formControlName="price" 
+            placeholder="Ej. 12.99" 
+            min="0" 
+            required>
+        </div>
+        
+        <!-- Campo para la imagen del plato -->
+        <div class="form-group">
+          <label for="image">Imagen del Plato</label>
+          <input 
+            type="file" 
+            class="form-control" 
+            id="image" 
+            (change)="onFileSelected($event)">
+        </div>
+        
+        <!-- Botón para enviar el formulario -->
+        <button 
+          type="submit" 
+          class="btn btn-primary btn-block mt-4">
+          {{ isEditMode ? 'Guardar Cambios' : 'Añadir Plato' }}
+        </button>
+      </form>
     </div>
   </div>
-  
+</div>

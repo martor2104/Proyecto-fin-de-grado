@@ -1,9 +1,46 @@
-<app-reservas></app-reservas>
+<div class="container-principal">
 
-<div class="container">
-  <!-- Recorremos las mesas y mostramos el número en cada cuadrado -->
-  <div class="square" *ngFor="let mesa of mesas" [id]="mesa.id">
-    {{ mesa.numero }}
+  
+  <!-- Contenedor flexible con fondo -->
+  <div class="content">
+    <img id="fondo_reserva" src="assets/utilities/fondo_reservado.jpeg" alt="Fondo de una mesa reservada">
+    
+    <button *ngIf="isAdmin" class="btn btn-success mb-3" (click)="addMesa()">Añadir Mesa</button>
+    <!-- Contenido principal -->
+    <div class="container-mesas">
+      
+      <!-- Mesas -->
+      <div
+        class="mesa"
+        *ngFor="let mesa of mesas"
+        (click)="actualizarMesa(mesa)"
+      >
+        <div class="mesa-numero">{{ mesa.numeroMesa }}</div>
+        <img [src]="getMesaImage(mesa)" alt="Mesa" class="mesa-imagen" />
+      </div>
+    </div>
+    
+    <!-- Carrusel -->
+    <div id="carouselExampleFade" class="carousel slide carousel-fade container-carrusel" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="assets/utilities/salon1.jpg" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="assets/utilities/salon2.jpg" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="assets/utilities/salon3.jpg" class="d-block w-100" alt="...">
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
   </div>
 </div>
-

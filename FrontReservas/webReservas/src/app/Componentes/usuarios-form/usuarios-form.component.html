@@ -1,5 +1,5 @@
 <div class="container mt-5">
-  <h2>{{ isEditMode ? 'Editar Usuario' : 'Añadir Usuario' }}</h2> <!-- Cambia el título dinámicamente -->
+  <h2>{{ isEditMode ? 'Editar Usuario' : 'Añadir Usuario' }}</h2>
   
   <form (ngSubmit)="onSubmit()" #usuarioForm="ngForm">
   
@@ -25,6 +25,12 @@
         <option [ngValue]="'ADMIN'">Admin</option>
         <option [ngValue]="'USER'">User</option>
       </select>
+    </div>
+
+
+    <div class="mb-3">
+      <label for="profileImage" class="form-label">Imagen de Perfil</label>
+      <input type="file" id="profileImage" (change)="onFileSelected($event)" class="form-control">
     </div>
   
     <!-- Cambia el texto del botón dinámicamente -->

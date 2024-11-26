@@ -1,20 +1,69 @@
-<app-reservas></app-reservas>
+<!-- Imagen de fondo ocupando toda la pantalla -->
+<img id="fondo_reserva" src="assets/utilities/fondo_reservado.jpeg" alt="Fondo de una mesa reservada" class="w-100">
 
-<div class="container mt-5">
-    <h2>Reservar una Mesa</h2>
-    <form (ngSubmit)="onSubmit()" #reservationForm="ngForm">
-      <div class="form-group">
-        <label for="tableNumber">Número de Mesa</label>
-        <select id="tableNumber" class="form-control" required [(ngModel)]="tableNumber" name="tableNumber">
-          <option *ngFor="let number of tableNumbers" [value]="number">{{ number }}</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="reservationDate">Fecha de Reserva</label>
-        <input type="date" id="reservationDate" class="form-control" required [(ngModel)]="reservationDate" name="reservationDate">
-      </div>
-      <button type="submit" class="btn btn-primary">Reservar</button>
-    </form>
+<!-- Contenedor del formulario de reserva -->
+<div class="container-centro">
+  <div class="container mt-5 formulario-reserva">
+    <h2 class="text-center">Reservar Mesa {{ mesa?.numeroMesa }}</h2>
+
+    <!-- Mostrar mensaje de confirmación o error -->
+    <div *ngIf="mensaje" class="alert alert-info text-center mt-3">
+      {{ mensaje }}
+    </div>
+
+    <!-- Información de reserva existente -->
+    <div 
+      *ngIf="mesa?.reservation?.user?.id === usuarioActualId || (mesa?.reservation != null && isAdmin); 
+            else reservationForm" 
+      class="text-center mt-4"
+    >
+      <p><strong>Fecha de la Reserva:</strong> {{ mesa?.reservation?.reservationDate | date }}</p>
+      <button 
+        type="button" 
+        class="btn btn-warning mt-3" 
+        (click)="cancelarReserva()"
+      >
+        Cancelar Reserva
+      </button>
+    </div>
+
+    <!-- Formulario para reservar la mesa -->
+    <ng-template #reservationForm>
+      <form (ngSubmit)="reservarMesa()" class="mt-4">
+        <div class="form-group">
+          <label for="fechaReserva">Fecha de Reserva</label>
+          <input 
+            type="date" 
+            id="fechaReserva" 
+            class="form-control" 
+            [(ngModel)]="reservationDate" 
+            name="fechaReserva" 
+            required 
+            [min]="hoy" 
+          />
+          <small class="form-text text-muted">
+            Selecciona una fecha válida para tu reserva.
+          </small>
+        </div>
+        <button 
+          type="submit" 
+          class="btn btn-primary mt-3 w-100"
+        >
+          Reservar Mesa
+        </button>
+      </form>
+    </ng-template>
+
+    <!-- Botón de Borrar Mesa, visible solo para administradores -->
+    <div class="text-center mt-4">
+      <button 
+        type="button" 
+        class="btn btn-danger mt-3 ml-2" 
+        (click)="borrarMesa()" 
+        *ngIf="isAdmin"
+      >
+        Borrar Mesa
+      </button>
+    </div>
   </div>
-  
-  
+</div>

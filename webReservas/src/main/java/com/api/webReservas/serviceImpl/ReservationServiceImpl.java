@@ -1,5 +1,9 @@
 package com.api.webReservas.serviceImpl;
 
+
+import com.api.webReservas.entity.*;
+import com.api.webReservas.repository.TableRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,17 +12,23 @@ import org.springframework.stereotype.Service;
 import com.api.webReservas.dto.ErrorDTO;
 import com.api.webReservas.dto.MessageDTO;
 import com.api.webReservas.dto.ReservationDTO;
-import com.api.webReservas.entity.Reservation;
-import com.api.webReservas.entity.Role;
-import com.api.webReservas.entity.User;
+
 import com.api.webReservas.repository.ReservationRepository;
 import com.api.webReservas.service.ReservationService;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
 	
 	@Autowired
 	private ReservationRepository repository;
+
+
+	@Autowired
+	private TableRepository tableRepository;
 
 	@Override
 	public ResponseEntity<?> getAll() {
@@ -38,22 +48,42 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	public ResponseEntity<?> saveReservation(User loggedUser, ReservationDTO reservation) {
-            Reservation newReservation = new Reservation(reservation);
-            return ResponseEntity.status(HttpStatus.OK).body(Reservation.toDTO(repository.save(newReservation)));
-        
+
+		// Obtener la fecha actual
+		LocalDate today = LocalDate.now();
+
+		// Validar que la fecha de la reserva no sea en el pasado
+		if (reservation.getReservationDate().isBefore(today)) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorDTO("You cannot reserve a table for a date in the past"));
+		}
+
+		// Crear y guardar la nueva reserva
+		Reservation newReservation = new Reservation(reservation);
+		Reservation savedReservation = repository.save(newReservation);
+
+		return ResponseEntity.status(HttpStatus.OK).body(Reservation.toDTO(savedReservation));
 	}
 
-	@Override
-	public ResponseEntity<?> deleteReservation(User loggedUser, Long id) {
-		Reservation reservation = repository.findById(id).orElse(null);
 
-		if(reservation != null && reservation.getUser().getId().equals(loggedUser.getId())) {
+
+	@Transactional
+	public ResponseEntity<?> deleteReservation(User loggedUser, Long reservationId) {
+		// Verificar que la reserva exista y pertenezca al usuario logueado
+		Reservation reservation = repository.findById(reservationId).orElse(null);
+
+		if (reservation != null && reservation.getUser().getId().equals(loggedUser.getId()) || loggedUser.getRole() == Role.ADMIN) {
+			// Establecer la referencia de `reservation` en `null` en la tabla `tables`
+			tableRepository.removeReservationReference(reservationId);
+
+			// Eliminar la reserva en la tabla `reservations`
 			repository.delete(reservation);
 			return ResponseEntity.status(HttpStatus.OK).body(new MessageDTO("Reservation deleted"));
-		} else if (reservation == null){
+		} else if (reservation == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("Reservation doesn't exist"));
-		}else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("You are not allowed to delete this reservation"));
+		} else {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You are not allowed to delete this reservation"));
+
 		}
 	}
 
@@ -72,6 +102,35 @@ public class ReservationServiceImpl implements ReservationService {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("Reservation doesn't exist"));
 		}
 
+	}
+
+
+	@Transactional
+	@Override
+	public ResponseEntity<?> createReservation(User user, ReservationDTO reservationDTO, Long mesaId) {
+		// Crear la reserva usando los datos del DTO
+		Reservation nuevaReserva = new Reservation();
+		nuevaReserva.setReservationDate(reservationDTO.getReservationDate());
+		nuevaReserva.setUser(user); // Asociar la reserva al usuario autenticado
+
+		// Guardar la nueva reserva en la base de datos
+		nuevaReserva = repository.save(nuevaReserva);
+
+		// Buscar la mesa por su ID
+		Table mesa = tableRepository.findById(mesaId).orElse(null);
+		if (mesa == null) {
+			return ResponseEntity.badRequest().body("Mesa no encontrada");
+		}
+
+		// Asociar la mesa a la reserva creada y cambiar el estado de la mesa
+		mesa.setReservation(nuevaReserva);  // Asocia la reserva a la mesa
+		mesa.setTableStatus(TableStatus.RESERVED);  // Cambiar el estado de la mesa a RESERVED
+
+		// Guardar los cambios en la mesa
+		tableRepository.save(mesa);
+
+		// Devolver la reserva creada como respuesta
+		return ResponseEntity.ok(Reservation.toDTO(nuevaReserva));
 	}
 
 }

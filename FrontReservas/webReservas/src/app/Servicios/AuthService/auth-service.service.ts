@@ -12,6 +12,8 @@ export class AuthService {
   private loggedIn = new BehaviorSubject<boolean>(this.checkLoggedIn());
   private username = new BehaviorSubject<string | null>(this.getUsernameFromLocalStorage());
   private userRol = new BehaviorSubject<string | null>(this.getRoleFromLocalStorage());
+  private profileImageUrl = new BehaviorSubject<string | null>(this.getProfileImageFromLocalStorage());
+
 
   constructor(private http: HttpClient) {}
 
@@ -21,12 +23,6 @@ export class AuthService {
 
   getUsername(): Observable<string | null> {
     return this.username.asObservable();
-  }
-
-  getUserId(): Observable<string | null> {
-    return this.http.get<{ userId: string | null }>(`${this.apiUrl}/getUserId`).pipe(
-      map(response => response.userId)
-    );
   }
 
   registrarUsuario(user: any): Observable<any> {
@@ -40,17 +36,22 @@ export class AuthService {
           // Guardar el token en localStorage
           localStorage.setItem('token', response.token);
           localStorage.setItem('username', request.name);
-
+  
           // Decodificar el token para extraer el rol
-          const decodedToken: any = jwt_decode(response.token);// Utilizar jwt-decode
-          const userRol = decodedToken.role || decodedToken.rol || decodedToken.userRol;  // Asegúrate de obtener el campo correcto
-          
+          const decodedToken: any = jwt_decode(response.token);
+          const userRol = decodedToken.role || decodedToken.rol || decodedToken.userRol;
+  
           if (userRol) {
-            localStorage.setItem('userRol', userRol);  // Almacenar userRol en localStorage
-            this.userRol.next(userRol);  // Actualizar BehaviorSubject
-          } else {
-            console.error('No se pudo extraer el rol del token');
+            localStorage.setItem('userRol', userRol);
+            this.userRol.next(userRol);
           }
+  
+          // Guardar la URL de la imagen de perfil
+          const profileImageUrl = response.profileImageUrl || 'assets/utilities/sinPerfil.png';
+          console.log("Profile Image URL from response:", profileImageUrl); // Verificar la URL de la imagen de perfil
+  
+          localStorage.setItem('profileImageUrl', profileImageUrl);
+          this.profileImageUrl.next(profileImageUrl); // Actualizar BehaviorSubject con la URL
         }
         this.loggedIn.next(true);
         this.username.next(request.name);
@@ -58,17 +59,21 @@ export class AuthService {
       })
     );
   }
+  
 
   logout(): void {
     if (this.isBrowser()) {
       localStorage.removeItem('token');
       localStorage.removeItem('username');
       localStorage.removeItem('userRol');
+      localStorage.removeItem('profileImageUrl');
     }
     this.loggedIn.next(false);
     this.username.next(null);
     this.userRol.next(null);
+    this.profileImageUrl.next('assets/utilities/sinPerfil.png');
   }
+  
 
   getRole(): Observable<string | null> {
     return this.userRol.asObservable();
@@ -95,8 +100,61 @@ export class AuthService {
     return null;
   }
 
+
+  
   private isBrowser(): boolean {
     return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+  }
+
+  getUserId(): Observable<number | null> {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken: any = jwt_decode(token);  // Decodifica el token JWT
+        const userId = decodedToken.userId;  // Asegúrate de que el 'userId' sea el campo correcto
+        return new BehaviorSubject<number | null>(userId).asObservable();
+      } catch (error) {
+        console.error('Error al decodificar el token', error);
+        return new BehaviorSubject<number | null>(null).asObservable();
+      }
+    }
+    return new BehaviorSubject<number | null>(null).asObservable();
+  }
+
+  verificarNombreUsuario(username: string): Observable<boolean> {
+    return this.http.get<boolean>(`/api/auth/exists/username/${username}`);
+  }
+  
+  
+  
+  getProfileImage(): Observable<string | null> {
+    return this.profileImageUrl.asObservable();
+  }
+
+
+  private getProfileImageFromLocalStorage(): string | null {
+    return this.isBrowser() ? localStorage.getItem('profileImageUrl') : null;
+  }
+
+    getUserIdFromToken(): number | null {
+    // Verifica si `localStorage` está disponible
+    if (typeof localStorage === 'undefined') {
+      console.warn('localStorage no está disponible.');
+      return null;
+    }
+  
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken: any = jwt_decode(token);
+        const userId = decodedToken.userId;  // Asegúrate de que `userId` sea el campo correcto
+        return userId ? Number(userId) : null;
+      } catch (error) {
+        console.error('Error al decodificar el token', error);
+        return null;
+      }
+    }
+    return null;
   }
 }
 

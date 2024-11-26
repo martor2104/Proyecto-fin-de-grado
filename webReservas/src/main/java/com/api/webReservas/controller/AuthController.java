@@ -51,8 +51,10 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@AuthenticationPrincipal UserDetails userDetails, @RequestBody RegisterRequest user) {
-        return authService.register((User) userDetails, user);
+        User loggedUser = (userDetails != null) ? (User) userDetails : null;
+        return authService.register(loggedUser, user);
     }
+
 
     @GetMapping("/isActive")
     @SecurityRequirement(name = "adminAuth")

@@ -1,21 +1,172 @@
-.container {
-  display: grid;
-  grid-template-columns: repeat(5, 50px); /* Crea 5 columnas de 50px */
-  grid-gap: 10px; /* Espacio entre los cuadrados */
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
+// Variables para colores (opcional)
+$background-color: rgba(255, 255, 255, 0.8);
+$mesa-border-radius: 50%;
+$button-bg-color: #28a745;
+$button-border-color: #28a745;
+
+// Fondo ajustado al contenedor .content con flex-grow-1
+#fondo_reserva {
+  position: absolute; // Para que sea independiente del flujo normal
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; // Ocupa toda la altura del contenedor .content
+  object-fit: cover; // Ajusta la imagen al tamaño del contenedor sin distorsión
+  z-index: 0; // Detrás del contenido del contenedor .content
 }
 
-.square {
-  width: 50px;
-  height: 50px;
-  background-color: lightblue;
+// Contenedor principal con flexbox
+.container-principal {
+  position: relative;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 16px;
-  font-weight: bold;
-  border: 2px solid darkblue;
-  border-radius: 5px;
+  flex-direction: row; // Mesas a la izquierda, carrusel a la derecha
+  width: 100%;
+  min-height: calc(100vh - 50px); // Altura del viewport menos el footer
+  z-index: 1; // Contenido encima del fondo
+  overflow: hidden; // Evita desbordamientos
+
+  @media (max-width: 768px) {
+    flex-direction: column; // Cambia la disposición a vertical
+  }
+}
+
+// Contenedor de contenido con flex-grow
+.content {
+  position: relative; // Para que los hijos con posición absoluta se ajusten a este contenedor
+  display: flex;
+  flex-grow: 1; // Ocupa todo el espacio disponible
+  flex-direction: row; // Organiza las mesas y el carrusel en fila
+  overflow: hidden; // Evita desbordamientos
+  z-index: 1; // Contenido por encima del fondo
+
+  @media (max-width: 768px) {
+    flex-direction: column; // Cambia la disposición a vertical
+  }
+}
+
+// Contenedor de mesas a la izquierda
+.container-mesas {
+  flex: 1; // Ocupa el 50% del contenedor principal
+  display: grid; // Uso de grid para organizar las mesas
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); // Las mesas se ajustan automáticamente
+  gap: 15px;
+  padding: 20px;
+  height: 100%; // Asegura que las mesas ocupen todo el alto
+  align-content: center; // Centra las mesas verticalmente
+  z-index: 1; // Por encima del fondo
+
+  @media (max-width: 768px) {
+    height: auto; // Ajusta la altura automáticamente
+    padding: 10px; // Ajusta el espacio alrededor
+  }
+}
+
+.mesa {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  text-align: center;
+  cursor: pointer;
+  background-color: white;
+  border-radius: $mesa-border-radius;
+
+  .mesa-numero {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+  }
+
+  .mesa-imagen {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// Estilos para imágenes de mesas según el estado de reserva
+.mesa-usuario-loggeado .mesa-imagen {
+  border-color: green;
+}
+
+.mesa-usuario-otro .mesa-imagen {
+  border-color: red;
+}
+
+// Contenedor del carrusel a la derecha
+.container-carrusel {
+  flex: 1; // Ocupa el 50% del contenedor principal
+  display: flex; // Para centrar el carrusel
+  justify-content: center; // Centra horizontalmente
+  align-items: center; // Centra verticalmente
+  padding: 20px;
+  z-index: 1; // Por encima del fondo
+
+  #carouselExampleFade {
+    max-width: 90%; // Tamaño máximo relativo al contenedor
+    max-height: 80%; // Limita la altura máxima
+  }
+
+  @media (max-width: 768px) {
+    margin-top: 20px; // Espacio adicional entre mesas y carrusel
+    max-width: 100%; // Asegura que el carrusel ocupe todo el ancho disponible
+  }
+}
+
+// Botones
+button {
+  z-index: 50;
+
+  &.btn-success {
+    position: relative;
+    z-index: 10;
+    font-size: 1.2em;
+    padding: 10px 20px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+    border: 2px solid $button-border-color;
+    background-color: $button-bg-color;
+    color: white;
+    border-radius: 8px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 10px;
+    margin-left: 10px;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.4);
+    }
+  }
+}
+
+// Ajustes para pantallas menores a 480px (teléfonos pequeños)
+@media (max-width: 480px) {
+  .container-mesas {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); // Ajusta automáticamente las columnas
+    gap: 8px; // Reduce el espacio entre mesas
+    padding: 5px; // Reduce el padding
+  }
+
+  .mesa {
+    width: 100%; // Ajusta el ancho al contenedor
+    height: auto; // Mantiene la proporción
+  }
+
+  .mesa-numero {
+    font-size: 14px; // Reduce el tamaño del número
+    top: -10px; // Ajusta la posición
+  }
+
+  .mesa-imagen {
+    width: 100%; // Asegura que ocupe todo el ancho
+    height: auto; // Mantiene las proporciones
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2); // Reduce la sombra
+  }
+
+  .container-carrusel {
+    margin-top: 10px; // Agrega espacio entre mesas y carrusel
+  }
 }

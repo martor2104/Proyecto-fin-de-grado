@@ -20,6 +20,16 @@ import com.api.webReservas.entity.User;
 import com.api.webReservas.repository.PlateRepository;
 import com.api.webReservas.service.PlateService;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Map;
+import java.util.Optional;
+
+
 @Service
 public class PlateServiceImpl implements PlateService{
 	
@@ -47,22 +57,84 @@ public class PlateServiceImpl implements PlateService{
 	}
 
 	@Override
-	public ResponseEntity<?> savePlate(User loggedUser, PlateDTO plate) {
-		if (loggedUser.getRole().equals(Role.ADMIN)) {
-			Plate newPlate = new Plate(plate);
-			Plate savedPlate = repository.save(newPlate);
-			return ResponseEntity.status(HttpStatus.CREATED).body(Plate.toDTO(savedPlate));
-		} else {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You doesn't have permissions to save tables"));
-		}
-    }
 
+	public ResponseEntity<?> savePlate(User loggedUser, PlateDTO plateDTO, MultipartFile image) {
+		if (!loggedUser.getRole().equals(Role.ADMIN)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("No tienes permisos para guardar platos"));
+		}
+
+		Plate newPlate = new Plate();
+		newPlate.setNamePlate(plateDTO.getNamePlate());
+		newPlate.setDescription(plateDTO.getDescription());
+		newPlate.setPrice(plateDTO.getPrice());
+		newPlate.setCategory(plateDTO.getCategory());
+
+		if (image != null && !image.isEmpty()) {
+			String imageUrl = saveImageToDirectory(image);
+			newPlate.setImg(imageUrl);
+		}
+
+		Plate savedPlate = repository.save(newPlate); // Aquí guardamos el plato en la base de datos
+
+		if (savedPlate.getId() == null) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al guardar el plato");
+		}
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(Plate.toDTO(savedPlate));
+	}
+
+
+
+
+	private String saveImageToDirectory(MultipartFile image) {
+		try {
+			String directoryPath = "E:/TFG/Front/Proyecto-fin-de-grado/FrontReservas/webReservas/src/assets/img_plates";
+			String filePath = Paths.get(directoryPath, image.getOriginalFilename()).toString();
+			Files.copy(image.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+			return "assets/img_plates/" + image.getOriginalFilename(); // Devuelve la URL relativa
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public ResponseEntity<?> putPlate(User loggedUser, Long id, PlateDTO plate, MultipartFile image) {
+		if (!loggedUser.getRole().equals(Role.ADMIN)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+					.body(new ErrorDTO("You don't have permissions to modify plate"));
+		}
+
+		Plate oldPlate = repository.findById(id).orElse(null);
+
+		if (oldPlate == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(new ErrorDTO("Plate doesn't exist"));
+		}
+
+		// Actualizar campos solo si los valores no son nulos
+		oldPlate.setNamePlate(Optional.ofNullable(plate.getNamePlate()).orElse(oldPlate.getNamePlate()));
+		oldPlate.setDescription(Optional.ofNullable(plate.getDescription()).orElse(oldPlate.getDescription()));
+		oldPlate.setPrice(Optional.ofNullable(plate.getPrice()).orElse(oldPlate.getPrice()));
+
+		// Guardar la nueva imagen si se proporciona
+		if (image != null && !image.isEmpty()) {
+			String imageUrl = saveImageToDirectory(image);
+			oldPlate.setImg(imageUrl); // Actualizar la URL de la imagen
+		}
+
+		// Guardar los cambios y devolver el DTO actualizado
+		Plate savedPlate = repository.save(oldPlate);
+		return ResponseEntity.ok(Plate.toDTO(savedPlate));
+	}
 
 	@Override
 	public ResponseEntity<?> deletePlate(Long id, UserDetails userDetails) {
 		if (userDetails == null) {
 			System.out.println("Usuario no autenticado");
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");
+
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(Map.of("error", "Usuario no autenticado"));
 		}
 
 		userDetails.getAuthorities().forEach(authority -> {
@@ -77,43 +149,22 @@ public class PlateServiceImpl implements PlateService{
 		System.out.println("¿El usuario tiene rol de ADMIN?: " + isAdmin);
 
 		if (!isAdmin) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permisos para eliminar este plato");
+
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+					.body(Map.of("error", "No tienes permisos para eliminar este plato"));
+
 		}
 
 		Plate plate = repository.findById(id).orElse(null);
 		if (plate == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Plato no encontrado");
+
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(Map.of("error", "Plato no encontrado"));
 		}
 
 		repository.delete(plate);
-		return ResponseEntity.status(HttpStatus.OK).body("Plato eliminado");
+
+		// Respuesta JSON válida
+		return ResponseEntity.ok(Map.of("message", "Plato eliminado"));
 	}
-
-
-
-
-
-
-
-	@Override
-	public ResponseEntity<?> putPlate(User loggedUser, Long id, PlateDTO plate) {
-		if (loggedUser.getRole().equals(Role.ADMIN)) {
-			Plate oldPlate = repository.findById(id).orElse(null);
-
-			if (oldPlate != null) {
-
-				oldPlate.setNamePlate((plate.getNamePlate() != null) ? plate.getNamePlate() : oldPlate.getNamePlate());
-				oldPlate.setDescription((plate.getDescription() != null)? plate.getDescription() : oldPlate.getDescription());
-				oldPlate.setPrice((plate.getPrice() != null) ? plate.getPrice() : oldPlate.getPrice());
-
-				return ResponseEntity.status(HttpStatus.OK).body(Plate.toDTO(repository.save(oldPlate)));
-			} else {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("User doesn't exist"));
-			}
-
-		} else {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You doesn't have permissions to modify user"));
-		}
-	}
-
 }

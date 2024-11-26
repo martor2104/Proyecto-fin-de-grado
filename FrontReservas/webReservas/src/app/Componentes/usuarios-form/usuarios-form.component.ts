@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { UserDTO } from '../../Model/usuario.model';
+import { User } from '../../Model/user.model';
 import { UsuariosServiceService } from '../../Servicios/usuarios/usuarios-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../Servicios/AuthService/auth-service.service';
 
 @Component({
   selector: 'app-usuarios-form',
@@ -10,36 +11,42 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class UsuariosFormComponent implements OnInit {
 
-  usuario: UserDTO = {
+  usuario: User = {
     id: null, 
     name: '',
     email: '',
     password: '',
-    userRol: null
+    userRol: null,
+    perfil: ''
   };
 
+  selectedFile: File | null = null; // Archivo de imagen seleccionado
   isEditMode: boolean = false; // Indicador de si es modo edición
+  
 
   constructor(
     private usuariosService: UsuariosServiceService,
     private router: Router,
-    private route: ActivatedRoute // Necesario para capturar el parámetro de la ruta
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    // Comprueba si hay un ID en la ruta para determinar si es una edición
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.isEditMode = true;
-      this.loadUsuario(+id); // Carga los datos del usuario si hay un ID
+      this.loadUsuario(+id); 
     }
   }
 
-  // Método para cargar los datos del usuario cuando estamos en modo edición
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0] || null;
+  }
+
   loadUsuario(id: number): void {
     this.usuariosService.getUsuario(id).subscribe(
       (data) => {
-        this.usuario = data; // Asigna los datos del usuario al formulario
+        this.usuario = data; 
       },
       (error) => {
         console.error('Error al cargar usuario:', error);
@@ -47,38 +54,56 @@ export class UsuariosFormComponent implements OnInit {
     );
   }
 
-  // Método para manejar el envío del formulario
   onSubmit(): void {
-    if (this.isEditMode) {
-      this.updateUsuario(); // Si es edición, actualiza el usuario
-    } else {
-      this.addUsuario(); // Si no es edición, añade un nuevo usuario
+    const formData = new FormData();
+    
+    // Convertir el objeto usuario a JSON y añadirlo al FormData
+    const userBlob = new Blob([JSON.stringify(this.usuario)], { type: 'application/json' });
+    formData.append('user', userBlob);
+    
+    // Añadir la imagen de perfil si está presente
+    if (this.selectedFile) {
+      formData.append('image', this.selectedFile, this.selectedFile.name);
     }
-  }
+  
+    if (this.isEditMode) {
+      this.updateUsuario(formData);
+    } else {
+      this.addUsuario(formData);
+    }
+  }  
 
-  // Método para añadir un nuevo usuario
-  addUsuario(): void {
-    this.usuariosService.addUsuario(this.usuario).subscribe(
-      () => {
-        this.router.navigate(['/usuarios']); // Redirigir a la lista de usuarios después de añadir
-      },
-      (error) => {
-        console.error('Error al añadir usuario:', error);
-      }
+  addUsuario(formData: FormData): void {
+    this.usuariosService.addUsuario(formData).subscribe(
+      () => this.router.navigate(['/usuarios']),
+      (error) => console.error('Error al añadir usuario:', error)
     );
   }
 
-  // Método para actualizar un usuario existente
-  updateUsuario(): void {
+  updateUsuario(formData: FormData): void {
     if (this.usuario.id !== null) {
-      this.usuariosService.updateUsuario(this.usuario.id, this.usuario).subscribe(
+      this.usuariosService.updateUsuario(this.usuario.id, formData).subscribe(
         () => {
-          this.router.navigate(['/usuarios']); // Redirigir a la lista de usuarios después de actualizar
+          // Verificar si el usuario actualizado es el logueado
+          const usuarioActualId = this.authService.getUserIdFromToken(); // Obtén el ID del usuario logueado
+          if (this.usuario.id === usuarioActualId) {
+            window.alert('Usuario actualizado correctamente. Por favor, vuelve a iniciar sesión.');
+            this.logoutAndRedirect(); // Cierra sesión y redirige
+          } else {
+            window.alert('Usuario actualizado correctamente.');
+          }
         },
-        (error) => {
-          console.error('Error al actualizar usuario:', error);
-        }
+        (error) => console.error('Error al actualizar usuario:', error)
       );
     }
   }
+  
+  
+  // Método para cerrar sesión y redirigir al login
+  logoutAndRedirect(): void {
+    // Aquí puedes incluir lógica para eliminar tokens, cookies, etc.
+    localStorage.clear(); // Por ejemplo, eliminar cualquier token almacenado
+    this.router.navigate(['/login']); // Redirigir al login
+  }
+  
 }

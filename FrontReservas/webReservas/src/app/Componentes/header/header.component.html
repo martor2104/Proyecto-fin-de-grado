@@ -1,28 +1,26 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
-    <!-- Logo a la izquierda -->
+    <!-- Logo -->
     <a class="navbar-brand" href="#">
       <img src="assets/logo.jpg" alt="Logo" width="30" height="30" class="d-inline-block align-text-top">
     </a>
     
-    <!-- Botones en el centro -->
     <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
       <ul class="navbar-nav">
         <li class="nav-item">
           <a routerLink="/carta" routerLinkActive="active" class="nav-link">Carta</a>
         </li>
         <li class="nav-item">
-          <a routerLink="/reservas" routerLinkActive="active" class="nav-link">Reservas</a>
+          <a routerLink="/reservas/mapa" routerLinkActive="active" class="nav-link">Mesas</a>
         </li>
         
-        <!-- Menú Admin dentro del ul, solo visible si el usuario es ADMIN -->
         <li class="nav-item dropdown" *ngIf="isAdmin">
           <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Admin
           </a>
           <ul class="dropdown-menu" aria-labelledby="adminDropdown">
             <li>
-              <a class="dropdown-item" routerLink="/mesas">Mesas</a>
+              <a class="dropdown-item" routerLink="/reservas/mapa">Mesas</a>
             </li>
             <li>
               <a class="dropdown-item" routerLink="/usuarios">Usuarios</a>
@@ -33,8 +31,17 @@
     </div>
 
     <!-- Información de usuario y botones de sesión -->
-    <div class="d-flex">
-      <span *ngIf="isLoggedIn" class="navbar-text me-3">Usuario: {{ username }}</span>
+    <div class="d-flex align-items-center">
+      <span *ngIf="isLoggedIn" class="navbar-text me-3">
+        <img 
+        [src]="profileImageUrl || 'assets/utilities/sinPerfil.png'" 
+        alt="Perfil" 
+        width="30" 
+        height="30" 
+        class="rounded-circle" 
+        (click)="goToProfile()"
+        style="cursor: pointer;">
+      </span>
       <button *ngIf="isLoggedIn" class="btn btn-outline-primary me-2" type="button" (click)="logout()">Cerrar Sesión</button>
       <button *ngIf="!isLoggedIn" class="btn btn-outline-primary me-2" type="button" routerLink="/login">Iniciar Sesión</button>
       <button *ngIf="!isLoggedIn" class="btn btn-primary" type="button" routerLink="/registro">Registrarse</button>

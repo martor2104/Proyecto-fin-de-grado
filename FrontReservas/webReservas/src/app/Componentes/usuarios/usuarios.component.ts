@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UserDTO } from '../../Model/usuario.model';
+import { User } from '../../Model/user.model';
 import { UsuariosServiceService } from '../../Servicios/usuarios/usuarios-service.service';
 import { Router } from '@angular/router';
 
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 })
 export class UsuariosComponent implements OnInit {
 
-  usuarios: UserDTO[] = [];
+  usuarios: User[] = [];
 
   constructor(private usuariosService: UsuariosServiceService, private router: Router) { }
 
@@ -41,7 +41,6 @@ export class UsuariosComponent implements OnInit {
       this.router.navigate(['/user/form']);
     }
   
-    // Redirigir al formulario para editar un usuario existente
     editUsuario(id: number): void {
       this.router.navigate(['/user/form', id]);
     }

@@ -13,5 +13,5 @@ public interface ReservationService {
 	ResponseEntity<?> saveReservation(User loggedUser, ReservationDTO Reservation);
 	ResponseEntity<?> deleteReservation(User loggedUser, Long id);
 	ResponseEntity<?> putReservation(User loggedUser, Long id, ReservationDTO Reservation);
-	
+    ResponseEntity<?> createReservation(User userDetails, ReservationDTO reservationDTO, Long mesaId);
 }
