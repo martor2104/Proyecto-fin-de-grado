@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
@@ -51,7 +52,8 @@ public class UserServiceImpl implements UserService{
 	@Autowired
 	private TableRepository tableRepository;
 
-	private final String directoryPath = "E:/TFG/Front/Proyecto-fin-de-grado/FrontReservas/webReservas/src/assets/img_perfil";
+	private final String directoryPath = Paths.get(System.getProperty("user.dir"), "src", "assets", "img_perfil").toString();
+
 
 
 	@Override
@@ -60,7 +62,7 @@ public class UserServiceImpl implements UserService{
 			return ResponseEntity.status(HttpStatus.OK).body(userRepository.findAll().stream().map(User::toDTO));
 		}else {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You doesn't have permissions to list users"));
-		}	
+		}
 	}
 
 	@Override
@@ -86,20 +88,48 @@ public class UserServiceImpl implements UserService{
 		}
 	}
 	public String saveProfileImage(Long userId, MultipartFile image) throws IOException {
-		String filePath = Paths.get(directoryPath, image.getOriginalFilename()).toString();
-		Files.copy(image.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+		// Ruta relativa desde el directorio actual al destino deseado
+		Path baseDirectory = Paths.get(System.getProperty("user.dir"), "..", "FrontReservas", "webReservas", "src", "assets", "img_perfil").normalize();
+
+		// Crear el directorio si no existe
+		if (!Files.exists(baseDirectory)) {
+			Files.createDirectories(baseDirectory);
+		}
+
+		// Validar que el archivo no sea nulo ni vacío
+		if (image == null || image.isEmpty()) {
+			throw new IllegalArgumentException("El archivo de imagen proporcionado está vacío o es nulo.");
+		}
+
+		// Validar que el nombre del archivo sea seguro
+		String originalFilename = image.getOriginalFilename();
+		if (originalFilename == null || originalFilename.trim().isEmpty()) {
+			throw new IllegalArgumentException("El archivo de imagen no tiene un nombre válido.");
+		}
+		if (originalFilename.contains("..") || originalFilename.contains("/") || originalFilename.contains("\\")) {
+			throw new IllegalArgumentException("El nombre del archivo contiene caracteres inseguros.");
+		}
+
+		// Construir la ruta del archivo
+		Path filePath = baseDirectory.resolve(originalFilename);
+
+		// Guardar el archivo en el sistema
+		Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+		// Log de éxito
+		System.out.println("Archivo guardado correctamente en: " + filePath.toAbsolutePath());
 
 		// Actualizar el atributo perfil en el usuario
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-		String imageUrl = "assets/img_perfil/" + image.getOriginalFilename();
-		user.setPerfil(imageUrl); // Guarda la URL de la imagen en el atributo perfil
+		// Usar una URL relativa para el perfil del usuario
+		String imageUrl = "assets/img_perfil/" + originalFilename; // Ruta relativa al frontend
+		user.setPerfil(imageUrl);
 		userRepository.save(user);
 
 		return imageUrl;
 	}
-
 
 	@Transactional
 	@Override
@@ -226,53 +256,6 @@ public class UserServiceImpl implements UserService{
 				.body("Usuario añadido correctamente.");
 	}
 
-
-	@Override
-	public User findByUsername(String username) {
-		Optional<User> userOptional = userRepository.findByOptionalName(username);
-
-		if (userOptional.isPresent()) {
-			User user = userOptional.get();
-			return user;
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public Long getUserId() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && authentication.getPrincipal() instanceof JwtUserDetails) {
-			JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
-			return userDetails.getId();
-		}
-		return null;
-	}
-
-	@Override
-	public ResponseEntity<?> addUser(User loggedUser, UserDTO userDTO) {
-		if (!loggedUser.getRole().equals(Role.ADMIN)) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN)
-					.body("No tienes permisos para añadir un usuario.");
-		}
-
-		if (userRepository.existsByEmail(userDTO.getEmail())) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body("Ya existe un usuario con este email.");
-		}
-
-		User newUser = new User();
-		newUser.setName(userDTO.getName());
-		newUser.setEmail(userDTO.getEmail());
-		newUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-		newUser.setRole(userDTO.getUserRol().equals(Role.ADMIN) ? Role.ADMIN : Role.USER);
-
-
-		userRepository.save(newUser);
-
-		return ResponseEntity.status(HttpStatus.CREATED)
-				.body("Usuario añadido correctamente.");
-	}
 
 	@Override
 	public User findByUsername(String username) {
