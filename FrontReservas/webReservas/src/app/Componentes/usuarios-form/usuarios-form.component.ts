@@ -20,8 +20,8 @@ export class UsuariosFormComponent implements OnInit {
     perfil: ''
   };
 
-  selectedFile: File | null = null; // Archivo de imagen seleccionado
-  isEditMode: boolean = false; // Indicador de si es modo edición
+  selectedFile: File | null = null;
+  isEditMode: boolean = false;
   
 
   constructor(
@@ -46,13 +46,18 @@ export class UsuariosFormComponent implements OnInit {
   loadUsuario(id: number): void {
     this.usuariosService.getUsuario(id).subscribe(
       (data) => {
-        this.usuario = data; 
+        this.usuario = data;
+  
+        
+        this.usuario.password = ''; 
       },
       (error) => {
         console.error('Error al cargar usuario:', error);
       }
     );
   }
+  
+  
 
   onSubmit(): void {
     const formData = new FormData();
@@ -84,11 +89,10 @@ export class UsuariosFormComponent implements OnInit {
     if (this.usuario.id !== null) {
       this.usuariosService.updateUsuario(this.usuario.id, formData).subscribe(
         () => {
-          // Verificar si el usuario actualizado es el logueado
-          const usuarioActualId = this.authService.getUserIdFromToken(); // Obtén el ID del usuario logueado
+          const usuarioActualId = this.authService.getUserIdFromToken(); 
           if (this.usuario.id === usuarioActualId) {
             window.alert('Usuario actualizado correctamente. Por favor, vuelve a iniciar sesión.');
-            this.logoutAndRedirect(); // Cierra sesión y redirige
+            this.logoutAndRedirect(); 
           } else {
             window.alert('Usuario actualizado correctamente.');
           }
@@ -99,11 +103,10 @@ export class UsuariosFormComponent implements OnInit {
   }
   
   
-  // Método para cerrar sesión y redirigir al login
-  logoutAndRedirect(): void {
-    // Aquí puedes incluir lógica para eliminar tokens, cookies, etc.
-    localStorage.clear(); // Por ejemplo, eliminar cualquier token almacenado
-    this.router.navigate(['/login']); // Redirigir al login
+ 
+  logoutAndRedirect(): void { 
+    localStorage.clear(); 
+    this.router.navigate(['/login']); 
   }
   
 }
