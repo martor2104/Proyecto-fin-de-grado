@@ -139,17 +139,5 @@ public class AuthServiceImpl implements AuthService {
                     .body(new ErrorDTO("Failed to register user: " + e.getMessage()));
         }
     }
-
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorDTO("Failed to register user"));
-        }
-    }
-}
-
-
-
-
 }
 
