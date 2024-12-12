@@ -49,6 +49,11 @@ export class CartaComponent implements OnInit {
   
     this.platoService.getPlatos().subscribe((platos: any[]) => {
       platos.forEach(plato => {
+        // Ajustar la URL de la imagen para cada plato
+        if (plato.img) {
+          plato.img = `/Images/${plato.img}`; // Construir la ruta completa
+        }
+  
         // Buscar si la categoría del plato ya existe en `categorias`
         let categoria = this.categorias.find(cat => cat.nombre === plato.category);
   
@@ -63,6 +68,7 @@ export class CartaComponent implements OnInit {
       });
     });
   }
+  
   
 
   toggleAddCategoryForm(): void {

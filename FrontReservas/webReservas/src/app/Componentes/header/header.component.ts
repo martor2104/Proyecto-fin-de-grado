@@ -24,22 +24,27 @@ export class HeaderComponent implements OnInit {
       }
     });
   }
-  
+
   loadUserData(): void {
     // Obtener el nombre de usuario
     this.authService.getUsername().subscribe(username => {
       this.username = username;
     });
-  
+
     // Verificación del rol de admin
     this.authService.getRole().subscribe(role => {
-      this.isAdmin = role?.toLowerCase() === 'admin'; 
+      this.isAdmin = role?.toLowerCase() === 'admin';
     });
-  
+
     // Obtener la imagen de perfil
     this.authService.getProfileImage().subscribe(imageUrl => {
       console.log("Profile Image URL in HeaderComponent:", imageUrl); // Verificar la URL de la imagen de perfil
-      this.profileImageUrl = imageUrl || 'assets/utilities/sinPerfil.png'; // Asigna una imagen predeterminada si es null
+      
+      // Asignar la URL de la imagen o la imagen predeterminada
+      this.profileImageUrl = imageUrl
+  ? `/Images/${imageUrl}`
+  : 'assets/utilities/sinPerfil.png';
+
     });
 
     // Obtener el ID del usuario logueado
@@ -50,7 +55,6 @@ export class HeaderComponent implements OnInit {
 
   // Método para redirigir al formulario de edición del perfil del usuario
   goToProfile(): void {
-    console.log(this.userId)
     if (this.userId !== null) {
       this.router.navigate([`/user/form/${this.userId}`]);
     }

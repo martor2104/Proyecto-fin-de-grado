@@ -37,7 +37,7 @@ public class Initializer implements CommandLineRunner {
 		user.setEmail("roberto.marqueztorres@gmail.com");
 
 		userRepository.save(user);
-*/
-	}
 
-}
+	}
+*/
+}}
