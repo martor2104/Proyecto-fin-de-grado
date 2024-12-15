@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 	private TableRepository tableRepository;
 
 	// Ruta base para las imágenes de perfil
-	private final Path baseDirectory = Paths.get(System.getProperty("user.dir"), "src", "Images", "img_perfil").normalize();
+	private final Path baseDirectory = Paths.get(System.getProperty("user.dir"), "..", "FrontReservas","webReservas", "src", "Images", "assets", "img_perfil").normalize();
 
 	@Override
 	public ResponseEntity<?> getAll(User loggedUser) {

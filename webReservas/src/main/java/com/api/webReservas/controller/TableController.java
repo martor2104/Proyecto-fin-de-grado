@@ -55,7 +55,6 @@ public class TableController {
     @PostMapping
     @Operation(summary = "Guarda una mesa", description = "Guarda una mesa en la base de datos")
     @SecurityRequirement(name = "adminAuth")
-
     public ResponseEntity<?> addTable(@AuthenticationPrincipal UserDetails loggedUser, @RequestBody TableDTO tableDTO) {
         return tableService.addTable((User) loggedUser, tableDTO);
     }

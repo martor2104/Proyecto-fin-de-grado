@@ -1,19 +1,21 @@
 package com.api.webReservas.auth;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class LoginRequest {
-	
-    String name;
-    String password;
 
+    private String name;
+    private String password;
+
+    // Constructor sin parámetros
+    public LoginRequest() {
+    }
+
+    // Constructor con parámetros
+    public LoginRequest(String name, String password) {
+        this.name = name;
+        this.password = password;
+    }
+
+    // Getters y Setters
     public String getName() {
         return name;
     }
@@ -28,5 +30,13 @@ public class LoginRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "LoginRequest{" +
+                "name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

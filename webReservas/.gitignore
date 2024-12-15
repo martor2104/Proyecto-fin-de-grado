@@ -1,9 +1,9 @@
-HELP.md
+# Ignorar archivos de compilación y generación de Maven
 target/
+**/target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
 
+# Ignorar archivos específicos de IDEs y entornos de desarrollo
 ### STS ###
 .apt_generated
 .classpath
@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Archivos específicos de configuración (si no los necesitas en el repositorio)
+# Puedes agregar cualquier archivo que no quieras compartir aquí
+HELP.md

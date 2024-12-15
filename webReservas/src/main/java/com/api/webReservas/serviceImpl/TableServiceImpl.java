@@ -1,13 +1,10 @@
 package com.api.webReservas.serviceImpl;
 
-
 import com.api.webReservas.entity.TableStatus;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import com.api.webReservas.dto.ErrorDTO;
 import com.api.webReservas.dto.MessageDTO;
 import com.api.webReservas.dto.TableDTO;
@@ -16,13 +13,11 @@ import com.api.webReservas.entity.Table;
 import com.api.webReservas.entity.User;
 import com.api.webReservas.repository.TableRepository;
 import com.api.webReservas.service.TableService;
-
-
 import java.util.Optional;
 
 @Service
 public class TableServiceImpl implements TableService {
-	
+
 	@Autowired
 	private TableRepository repository;
 
@@ -33,12 +28,11 @@ public class TableServiceImpl implements TableService {
 
 	@Override
 	public ResponseEntity<?> getById(Long id) {
-
 		Table table = repository.findById(id).orElse(null);
-		
+
 		if (table != null) {
 			return ResponseEntity.status(HttpStatus.OK).body(Table.toDTO(table));
-		}else {
+		} else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("Table doesn't exist"));
 		}
 	}
@@ -48,7 +42,7 @@ public class TableServiceImpl implements TableService {
 		if (loggedUser.getRole().equals(Role.ADMIN)) {
 			Table table = repository.findById(id).orElse(null);
 
-			if(table != null) {
+			if (table != null) {
 				repository.delete(table);
 				return ResponseEntity.status(HttpStatus.OK).body(new MessageDTO("Table deleted"));
 			} else {
@@ -56,7 +50,7 @@ public class TableServiceImpl implements TableService {
 			}
 
 		} else {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You doesn't have permissions to delete tables"));
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You don't have permissions to delete tables"));
 		}
 	}
 
@@ -80,7 +74,7 @@ public class TableServiceImpl implements TableService {
 
 		// Verificar si se ha actualizado la reserva y cambiar el estado de la mesa en consecuencia
 		if (existingTable.getReservation() != null) {
-			existingTable.setTableStatus(TableStatus.RESERVED);  // Cambiar a OCUPED si la reserva no es null
+			existingTable.setTableStatus(TableStatus.RESERVED);  // Cambiar a RESERVED si la reserva no es null
 		} else {
 			existingTable.setTableStatus(TableStatus.PENDING);  // Mantener PENDING si la reserva es null
 		}
@@ -91,8 +85,6 @@ public class TableServiceImpl implements TableService {
 		// Devolver la mesa actualizada en el cuerpo de la respuesta
 		return ResponseEntity.status(HttpStatus.OK).body(Table.toDTO(updatedTable));
 	}
-
-
 
 	@Override
 	public ResponseEntity<?> addTable(User loggedUser, TableDTO tableDTO) {
@@ -107,17 +99,14 @@ public class TableServiceImpl implements TableService {
 		}
 
 		// Crear la nueva mesa
-		Table newTable = Table.builder()
-				.reservation(null)  // No hay reserva al crear la mesa
-				.tableStatus(TableStatus.PENDING)  // Estado inicial es PENDING
-				.numeroMesa(tableDTO.getNumeroMesa())
-				.build();
+		Table newTable = new Table();
+		newTable.setReservation(null);  // No hay reserva al crear la mesa
+		newTable.setTableStatus(TableStatus.PENDING);  // Estado inicial es PENDING
+		newTable.setNumeroMesa(tableDTO.getNumeroMesa());
 
 		repository.save(newTable);
 		return ResponseEntity.status(HttpStatus.CREATED).body(Table.toDTO(newTable));
 	}
-
-
 
 	public ResponseEntity<?> getMesaByNumero(int numeroMesa) {
 		Optional<Table> table = repository.findByNumeroMesa(numeroMesa);

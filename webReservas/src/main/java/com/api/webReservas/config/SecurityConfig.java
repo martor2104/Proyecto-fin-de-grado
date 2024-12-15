@@ -1,7 +1,6 @@
 package com.api.webReservas.config;
 
 import com.api.webReservas.jwt.JwtAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -20,11 +19,16 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
+
+    // Constructor explícito para la inyección de dependencias
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, AuthenticationProvider authenticationProvider) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.authenticationProvider = authenticationProvider;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,7 +42,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/tables/**").permitAll()
                         .requestMatchers("/api/plates/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
-
                         .anyRequest().authenticated()  // Cualquier otra ruta requiere autenticación
                 )
                 .authenticationProvider(authenticationProvider)  // Establece el proveedor de autenticación
