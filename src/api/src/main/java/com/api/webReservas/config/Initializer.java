@@ -29,6 +29,7 @@ public class Initializer implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 /*
+		System.out.println("Initializing the user...");
 		User user = new User();
 
 		user.setName("roberto");
@@ -37,7 +38,7 @@ public class Initializer implements CommandLineRunner {
 		user.setEmail("roberto.marqueztorres@gmail.com");
 
 		userRepository.save(user);
-
-	}
 */
-}}
+	}
+
+}

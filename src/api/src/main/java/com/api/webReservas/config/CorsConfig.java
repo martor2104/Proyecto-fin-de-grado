@@ -16,11 +16,11 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        // Permitir todas las solicitudes de cualquier origen
-        config.addAllowedOrigin("*");
-        // Permitir todos los encabezados y métodos
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("*");  // Permite todos los orígenes (solo para pruebas)
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+        config.addExposedHeader("Authorization");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
@@ -31,7 +31,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:4200/**")  // Ajusta la URL según tu configuración
+                        .allowedOrigins("*")  // Permite todos los orígenes (solo para pruebas)
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("Authorization", "Content-Type")
                         .exposedHeaders("Authorization")
@@ -39,5 +39,4 @@ public class CorsConfig {
             }
         };
     }
-
 }
