@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,7 +39,7 @@ public class TableController {
         return tableService.getMesaByNumero(numeroMesa);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping(value = "/delete/{id}", produces =  MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Borra una mesa", description = "Deshabilita una mesa de la base de datos por su id")
     @SecurityRequirement(name = "adminAuth")
     public ResponseEntity<?> deleteTable(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {

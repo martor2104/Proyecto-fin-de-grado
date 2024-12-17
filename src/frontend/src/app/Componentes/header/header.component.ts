@@ -42,9 +42,8 @@ export class HeaderComponent implements OnInit {
       
       // Asignar la URL de la imagen o la imagen predeterminada
       this.profileImageUrl = imageUrl
-  ? `/Images/${imageUrl}`
-  : 'assets/utilities/sinPerfil.png';
-
+  ? `assets/Images/${imageUrl}`  // Accede a la imagen de manera relativa
+  : 'assets/utilities/sinPerfil.png'; // Imagen predeterminada si no hay imagen
     });
 
     // Obtener el ID del usuario logueado

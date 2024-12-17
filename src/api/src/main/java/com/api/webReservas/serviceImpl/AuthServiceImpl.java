@@ -122,7 +122,6 @@ public class AuthServiceImpl implements AuthService {
             }
 
             // Crear el nuevo usuario
-
             User newUser = new User(request);
             newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
             userRepository.save(newUser);

@@ -34,45 +34,18 @@ public class UserServiceImpl implements UserService {
 	private TableRepository tableRepository;
 
 	// Ruta base para las imágenes de perfil
-	private final Path baseDirectory = Paths.get(System.getProperty("user.dir"), "..", "FrontReservas","webReservas", "src", "Images", "assets", "img_perfil").normalize();
-
-	@Override
-	public ResponseEntity<?> getAll(User loggedUser) {
-		if (loggedUser.getRole().equals(Role.ADMIN)) {
-			return ResponseEntity.status(HttpStatus.OK)
-					.body(userRepository.findAll().stream().map(User::toDTO));
-		} else {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN)
-					.body(new ErrorDTO("You don't have permissions to list users"));
-		}
-	}
-
-	@Override
-	public boolean existsByName(String name) {
-		return userRepository.existsByName(name);
-	}
-
-	@Override
-	public ResponseEntity<?> getById(User loggedUser, Long id) {
-		if (loggedUser.getRole().equals(Role.ADMIN)) {
-			User user = userRepository.findById(id).orElse(null);
-
-			if (user != null) {
-				return ResponseEntity.status(HttpStatus.OK).body(User.toDTO(user));
-			} else {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND)
-						.body(new ErrorDTO("User doesn't exist"));
-			}
-		} else {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN)
-					.body(new ErrorDTO("You don't have permissions to access this user"));
-		}
-	}
+	private final Path baseDirectory = Paths.get("src", "frontend", "src", "Images", "assets", "img_perfil").normalize();
 
 	public String saveProfileImage(Long userId, MultipartFile image) throws IOException {
+		// Obtener el directorio de trabajo actual (raíz del proyecto)
+		String userDir = System.getProperty("user.dir");
+
+		// Crear la ruta completa concatenando la raíz del proyecto con la ruta relativa a la carpeta de imágenes
+		Path fullPath = Paths.get(userDir, baseDirectory.toString()).normalize();
+
 		// Crear el directorio si no existe
-		if (!Files.exists(baseDirectory)) {
-			Files.createDirectories(baseDirectory);
+		if (!Files.exists(fullPath)) {
+			Files.createDirectories(fullPath);
 		}
 
 		// Validar que el archivo no sea nulo ni vacío
@@ -92,8 +65,8 @@ public class UserServiceImpl implements UserService {
 		// Limpiar el nombre del archivo para mayor seguridad
 		String sanitizedFilename = originalFilename.replaceAll("[^a-zA-Z0-9\\.\\-_]", "_");
 
-		// Construir la ruta del archivo
-		Path filePath = baseDirectory.resolve(sanitizedFilename);
+		// Construir la ruta final del archivo
+		Path filePath = fullPath.resolve(sanitizedFilename);
 
 		// Guardar el archivo en el sistema
 		Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
@@ -101,17 +74,37 @@ public class UserServiceImpl implements UserService {
 		// Log de éxito
 		System.out.println("File saved successfully at: " + filePath.toAbsolutePath());
 
-		// Actualizar el atributo perfil en el usuario
-		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new RuntimeException("User not found"));
+		// Devolver solo el nombre del archivo para la URL en el frontend
+		return "assets/img_perfil/" + sanitizedFilename;
+	}
+	@Override
+	public ResponseEntity<?> getAll(User loggedUser) {
+		if (loggedUser.getRole().equals(Role.ADMIN)) {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(userRepository.findAll().stream().map(User::toDTO));
+		} else {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+					.body(new ErrorDTO("You don't have permissions to list users"));
+		}
+	}
 
-		// Usar solo el nombre del archivo como URL relativa para el frontend
-		String imageUrl = sanitizedFilename; // Devuelve solo el nombre del archivo
-		System.out.println("Image URL sent to frontend: " + imageUrl);
-		user.setPerfil(imageUrl);
-		userRepository.save(user);
+	@Override
+	public boolean existsByName(String name) {
+		return userRepository.existsByName(name);
+	}
 
-		return imageUrl;
+	@Override
+	public ResponseEntity<?> getById(User loggedUser, Long id) {
+
+			User user = userRepository.findById(id).orElse(null);
+
+			if (user != null) {
+				return ResponseEntity.status(HttpStatus.OK).body(User.toDTO(user));
+			} else {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND)
+						.body(new ErrorDTO("User doesn't exist"));
+			}
+
 	}
 
 

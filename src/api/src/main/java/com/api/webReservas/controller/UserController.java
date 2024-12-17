@@ -39,9 +39,17 @@ public class UserController {
 		return userService.getAll((User) userDetails);
 	}
 
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	@GetMapping("/{id}")
 	@Operation(summary = "Obtener un usuario", description = "Obtiene un usuario por id")
 	public ResponseEntity<?> getUserById(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+		if (userDetails == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+		}
+
+		System.out.println("Usuario autenticado: " + userDetails.getUsername());
+		System.out.println("Roles del usuario: " + userDetails.getAuthorities());
+
 		return userService.getById((User) userDetails, id);
 	}
 
@@ -63,6 +71,7 @@ public class UserController {
 	}
 
 
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	@PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@Operation(summary = "Actualiza un usuario", description = "Actualiza un usuario por su id")
 	public ResponseEntity<?> putUser(

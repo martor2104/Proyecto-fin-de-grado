@@ -39,20 +39,24 @@ public class TableServiceImpl implements TableService {
 
 	@Override
 	public ResponseEntity<?> deleteTable(User loggedUser, Long id) {
-		if (loggedUser.getRole().equals(Role.ADMIN)) {
-			Table table = repository.findById(id).orElse(null);
 
-			if (table != null) {
-				repository.delete(table);
-				return ResponseEntity.status(HttpStatus.OK).body(new MessageDTO("Table deleted"));
-			} else {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("Table doesn't exist"));
-			}
+		// Buscar la mesa por ID
+		Optional<Table> optionalTable = repository.findById(id);
 
+		if (optionalTable.isPresent()) {
+			// Eliminar la mesa si existe
+			repository.delete(optionalTable.get());
+			return ResponseEntity
+					.status(HttpStatus.OK)
+					.body(new MessageDTO("Table deleted"));
 		} else {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("You don't have permissions to delete tables"));
+			// Retornar error si no existe
+			return ResponseEntity
+					.status(HttpStatus.NOT_FOUND)
+					.body(new ErrorDTO("Table doesn't exist"));
 		}
 	}
+
 
 	@Override
 	public ResponseEntity<?> putTable(User loggedUser, Long id, TableDTO tableDTO) {

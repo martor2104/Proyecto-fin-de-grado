@@ -22,7 +22,8 @@ export class UsuariosFormComponent implements OnInit {
 
   selectedFile: File | null = null;
   isEditMode: boolean = false;
-  
+  isAdmin: boolean = false; // Variable que indica si el usuario actual es ADMIN
+  userRole: string | null = null;
 
   constructor(
     private usuariosService: UsuariosServiceService,
@@ -37,6 +38,12 @@ export class UsuariosFormComponent implements OnInit {
       this.isEditMode = true;
       this.loadUsuario(+id); 
     }
+
+    // Verificar si el usuario autenticado es ADMIN
+    this.authService.getRole().subscribe(role => {
+      this.isAdmin = role?.toLowerCase() === 'admin';  // Establece isAdmin si el rol es 'admin'
+      this.userRole = role;  // Guarda el rol del usuario actual
+    });
   }
 
   onFileSelected(event: any): void {
@@ -47,9 +54,7 @@ export class UsuariosFormComponent implements OnInit {
     this.usuariosService.getUsuario(id).subscribe(
       (data) => {
         this.usuario = data;
-  
-        
-        this.usuario.password = ''; 
+        this.usuario.password = ''; // Eliminar la contraseña para que no sea visible
       },
       (error) => {
         console.error('Error al cargar usuario:', error);
@@ -57,16 +62,12 @@ export class UsuariosFormComponent implements OnInit {
     );
   }
   
-  
-
   onSubmit(): void {
     const formData = new FormData();
     
-    // Convertir el objeto usuario a JSON y añadirlo al FormData
     const userBlob = new Blob([JSON.stringify(this.usuario)], { type: 'application/json' });
     formData.append('user', userBlob);
     
-    // Añadir la imagen de perfil si está presente
     if (this.selectedFile) {
       formData.append('image', this.selectedFile, this.selectedFile.name);
     }
@@ -101,12 +102,9 @@ export class UsuariosFormComponent implements OnInit {
       );
     }
   }
-  
-  
- 
+
   logoutAndRedirect(): void { 
     localStorage.clear(); 
     this.router.navigate(['/login']); 
   }
-  
 }

@@ -1,4 +1,3 @@
-<img id="banner" src="assets/utilities/BANNER_MENU.png" alt="Banner mostrando la palabra menú">
 <div class="container mt-5">
   <button class="btn btn-success mb-3" *ngIf="isAdmin" (click)="toggleAddCategoryForm()">Añadir Nueva Categoría</button>
 
@@ -37,7 +36,10 @@
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">{{ plato.namePlate }}</h5>
-                  <img [src]="plato.img" alt="Imagen del plato" class="comida img-fluid mb-2">
+
+                  <img *ngIf="plato.img" [src]="plato.img" alt="Imagen del plato" class="comida img-fluid mb-2">
+
+                  
                   <p class="card-text">{{ plato.description }}</p>
                   <p class="card-text">Precio: ${{ plato.price }}</p>
                   <button class="btn btn-primary mr-2" 

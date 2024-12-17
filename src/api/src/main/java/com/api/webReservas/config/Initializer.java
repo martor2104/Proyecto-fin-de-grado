@@ -29,6 +29,8 @@ public class Initializer implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 /*
+		System.out.println("Bebe tu ere una diabla");
+
 		System.out.println("Initializing the user...");
 		User user = new User();
 

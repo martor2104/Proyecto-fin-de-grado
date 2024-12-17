@@ -37,9 +37,10 @@
                 [(ngModel)]="registro.email"
                 name="email"
                 required
+                pattern="[a-zA-Z0-9._%+-]+@gmail\.com$"
                 #email="ngModel">
               <div *ngIf="email.invalid && email.touched" class="text-danger">
-                El correo electrónico es obligatorio.
+                El correo electrónico es obligatorio y debe ser de tipo &#64;.com.
               </div>
             </div>
 
@@ -53,9 +54,10 @@
                 [(ngModel)]="registro.password"
                 name="password"
                 required
+                pattern="^(?=.*[a-z])(?=.*[A-Z]).{6,}$"
                 #password="ngModel">
               <div *ngIf="password.invalid && password.touched" class="text-danger">
-                La contraseña es obligatoria.
+                La contraseña debe tener al menos 6 caracteres, incluyendo una letra mayúscula y una minúscula.
               </div>
             </div>
 

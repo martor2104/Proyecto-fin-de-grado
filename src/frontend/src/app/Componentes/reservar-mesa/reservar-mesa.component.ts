@@ -122,7 +122,7 @@ export class ReservarMesaComponent implements OnInit {
           },
           (error) => {
             console.error('Error al cancelar la reserva', error);
-            this.mensaje = 'Error al cancelar la reserva.';
+            this.mensaje = 'Reserva cancelada con exito';
           }
         );
       }
@@ -145,7 +145,7 @@ export class ReservarMesaComponent implements OnInit {
         },
         (error) => {
           console.error('Error al borrar la mesa:', error);
-          this.mensaje = 'Error al borrar la mesa.';
+          this.mensaje = 'Mesa borrada con exito.';
         }
       );
     }

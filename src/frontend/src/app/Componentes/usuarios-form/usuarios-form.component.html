@@ -1,39 +1,40 @@
 <div class="container mt-5">
   <h2>{{ isEditMode ? 'Editar Usuario' : 'Añadir Usuario' }}</h2>
-  
+
   <form (ngSubmit)="onSubmit()" #usuarioForm="ngForm">
-  
+    
     <div class="mb-3">
       <label for="name" class="form-label">Nombre</label>
       <input type="text" id="name" class="form-control" [(ngModel)]="usuario.name" name="name" required>
     </div>
-  
+
     <div class="mb-3">
       <label for="email" class="form-label">Email</label>
-      <input type="email" id="email" class="form-control" [(ngModel)]="usuario.email" name="email" required>
+      <input type="email" id="email" class="form-control" [(ngModel)]="usuario.email" name="email" 
+             required email pattern="[a-zA-Z0-9._%+-]+@gmail\.com$">
+      <div *ngIf="usuarioForm.form.controls['email']?.errors?.['pattern'] && usuarioForm.form.controls['email']?.touched" class="text-danger">
+        El correo debe ser un correo válido de &#64;gmail.com.
+      </div>
     </div>
-  
+
     <div class="mb-3">
       <label for="password" class="form-label">Contraseña</label>
-      <input type="password" id="password" class="form-control" [(ngModel)]="usuario.password" name="password" required>
+      <input type="password" id="password" class="form-control" [(ngModel)]="usuario.password" name="password" 
+             required pattern="^(?=.*[a-z])(?=.*[A-Z]).{6,}$">
+      <div *ngIf="usuarioForm.form.controls['password']?.errors?.['pattern'] && usuarioForm.form.controls['password']?.touched" class="text-danger">
+        La contraseña debe tener al menos 6 caracteres, incluyendo una letra mayúscula y una minúscula.
+      </div>
     </div>
-  
+
     <div class="mb-3">
       <label for="role" class="form-label">Rol</label>
       <select id="role" class="form-select" [(ngModel)]="usuario.userRol" name="userRol" required>
         <option [ngValue]="null">Seleccione un rol</option>
-        <option [ngValue]="'ADMIN'">Admin</option>
+        <option *ngIf="isAdmin" [ngValue]="'ADMIN'">Admin</option>
         <option [ngValue]="'USER'">User</option>
       </select>
     </div>
 
-
-    <div class="mb-3">
-      <label for="profileImage" class="form-label">Imagen de Perfil</label>
-      <input type="file" id="profileImage" (change)="onFileSelected($event)" class="form-control">
-    </div>
-  
-    <!-- Cambia el texto del botón dinámicamente -->
     <button type="submit" class="btn btn-primary" [disabled]="!usuarioForm.form.valid">
       {{ isEditMode ? 'Actualizar Usuario' : 'Añadir Usuario' }}
     </button>
